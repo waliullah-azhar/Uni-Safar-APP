@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@100..900&display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "tertiary": "#3a3c3e",
+                    "outline": "#6f7973",
+                    "background": "#f9f9ff",
+                    "surface-variant": "#dce2f7",
+                    "surface-container": "#e9edff",
+                    "on-error-container": "#93000a",
+                    "on-secondary": "#ffffff",
+                    "on-primary-fixed-variant": "#00513b",
+                    "primary": "#004532",
+                    "inverse-surface": "#293040",
+                    "secondary-fixed-dim": "#c6c6c7",
+                    "secondary": "#5d5f5f",
+                    "on-background": "#141b2b",
+                    "surface-tint": "#1b6b51",
+                    "primary-fixed-dim": "#8bd6b6",
+                    "surface-container-highest": "#dce2f7",
+                    "outline-variant": "#bec9c2",
+                    "tertiary-fixed": "#e1e2e4",
+                    "on-surface-variant": "#3f4944",
+                    "on-primary-container": "#8bd6b7",
+                    "tertiary-container": "#515355",
+                    "on-tertiary-fixed-variant": "#444749",
+                    "on-tertiary-container": "#c5c7c9",
+                    "secondary-container": "#dfe0e0",
+                    "surface-bright": "#f9f9ff",
+                    "on-tertiary-fixed": "#191c1e",
+                    "surface-dim": "#d3daef",
+                    "on-primary-fixed": "#002116",
+                    "inverse-primary": "#8bd6b6",
+                    "primary-container": "#065f46",
+                    "surface-container-low": "#f1f3ff",
+                    "on-secondary-fixed-variant": "#454747",
+                    "on-primary": "#ffffff",
+                    "on-secondary-fixed": "#1a1c1c",
+                    "on-secondary-container": "#616363",
+                    "surface-container-high": "#e1e8fd",
+                    "on-surface": "#141b2b",
+                    "on-tertiary": "#ffffff",
+                    "primary-fixed": "#a6f2d1",
+                    "error-container": "#ffdad6",
+                    "inverse-on-surface": "#edf0ff",
+                    "secondary-fixed": "#e2e2e2",
+                    "tertiary-fixed-dim": "#c5c6c8",
+                    "on-error": "#ffffff",
+                    "surface-container-lowest": "#ffffff",
+                    "surface": "#f9f9ff",
+                    "error": "#ba1a1a"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "stack-md": "16px",
+                    "inset-squish": "12px 24px",
+                    "inset-equal": "20px",
+                    "stack-sm": "8px",
+                    "container-margin": "24px",
+                    "stack-lg": "32px",
+                    "unit": "4px",
+                    "gutter": "16px"
+            },
+            "fontFamily": {
+                    "headline-xl": ["Manrope"],
+                    "headline-lg-mobile": ["Manrope"],
+                    "label-md": ["Manrope"],
+                    "label-sm": ["Manrope"],
+                    "headline-md": ["Manrope"],
+                    "headline-lg": ["Manrope"],
+                    "body-md": ["Manrope"],
+                    "body-lg": ["Manrope"]
+            },
+            "fontSize": {
+                    "headline-xl": ["40px", {"lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+                    "headline-lg-mobile": ["28px", {"lineHeight": "34px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                    "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.02em", "fontWeight": "600"}],
+                    "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "700"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .card-stack {
+            perspective: 1000px;
+            height: calc(100vh - 180px);
+            position: relative;
+        }
+        .swipe-card {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+            cursor: grab;
+            user-select: none;
+            touch-action: none;
+        }
+        .swipe-card:active {
+            cursor: grabbing;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-select {
+            user-select: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background font-body-md text-on-surface custom-scrollbar">
+<!-- Top Navigation Shell -->
+<header class="w-full sticky top-0 z-50 bg-surface border-b border-outline-variant flex justify-between items-center px-container-margin py-stack-sm w-full">
+<div class="text-headline-md font-headline-md text-primary">UniRide</div>
+<div class="flex gap-stack-sm items-center">
+<button class="material-symbols-outlined text-primary p-2 hover:bg-surface-container-low transition-colors active:scale-95 transition-transform" data-icon="search">search</button>
+<button class="material-symbols-outlined text-primary p-2 hover:bg-surface-container-low transition-colors active:scale-95 transition-transform" data-icon="menu">menu</button>
+</div>
+</header>
+<main class="max-w-[1200px] mx-auto px-container-margin pt-stack-md pb-32">
+<!-- Search & Filter Bar -->
+<section class="mb-stack-lg">
+<div class="flex gap-gutter items-center bg-surface-container-lowest border border-outline-variant rounded-xl p-2 shadow-sm">
+<div class="flex-grow flex items-center px-2">
+<span class="material-symbols-outlined text-outline mr-2" data-icon="search">search</span>
+<input class="w-full bg-transparent border-none focus:ring-0 font-body-md text-on-surface placeholder-on-surface-variant" placeholder="Search University, Area, or Date" type="text"/>
+</div>
+<button class="bg-primary-container text-on-primary-container p-2 rounded-lg flex items-center justify-center transition-transform active:scale-95">
+<span class="material-symbols-outlined" data-icon="filter_list">filter_list</span>
+</button>
+</div>
+</section>
+<!-- Tinder-Style Feed Container -->
+<div class="relative w-full max-w-md mx-auto card-stack" id="card-container">
+<!-- Card 1 -->
+<div class="swipe-card z-30" id="card-1">
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-inset-equal h-full flex flex-col shadow-sm relative overflow-hidden">
+<!-- Top Section -->
+<div class="flex justify-between items-start mb-stack-md">
+<div class="flex items-center gap-3">
+<div class="w-12 h-12 rounded-full overflow-hidden border border-outline-variant">
+<img class="w-full h-full object-cover" data-alt="A professional close-up portrait of a friendly male university student driver. He is wearing a clean, casual polo shirt and smiling confidently. The lighting is soft and natural, emphasizing a trustworthy and reliable persona. The background is a blurred university campus setting, maintaining a focus on the subject with a modern and clean aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC88doMv9OAZTseaXVCTDc92DVlbFeYBalE1p0RnElbTeO6bwI2SIXPCsJvCFSLs7YfXTBCjzEoCGm58L2IfdLudC55uc_Eo7a2cIDI2nDEgCpUsdBorgt5CGs2UmnEPGwYxmwJn0dxdvpd1kWVCDkitPBX_VqrJW8nGk3CU208uW9X_ND3L3V-4WwkKhVjLtWwKuiUIDIuKeaSHfNkigvhqBocLHnIdJvEsHeeQDG2bYgn-lX593ZFSDh1JCFqeEAGCKOt7_k89yNa"/>
+</div>
+<div>
+<h3 class="font-headline-md text-on-surface leading-tight">Ahmed R.</h3>
+<div class="flex items-center bg-surface-container-high px-2 py-0.5 rounded-full mt-1">
+<span class="material-symbols-outlined text-[14px] text-primary" data-icon="star" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="text-label-sm ml-1 text-primary">4.9</span>
+</div>
+</div>
+</div>
+<div class="bg-primary text-on-primary px-3 py-1 rounded-lg">
+<span class="font-headline-md text-white">Rs. 150</span>
+</div>
+</div>
+<!-- Middle Section: Ride Details -->
+<div class="space-y-stack-md flex-grow">
+<div class="flex justify-between items-end">
+<div>
+<p class="text-label-sm text-outline uppercase tracking-wider">Departure</p>
+<p class="font-headline-md text-primary">08:30 AM</p>
+</div>
+<div class="text-right">
+<span class="bg-surface-container text-on-surface-variant text-label-sm px-2 py-1 rounded-lg">3 seats left</span>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<span class="bg-surface-container-high text-on-surface text-label-md px-3 py-1 rounded-lg flex items-center gap-1">
+                                🧑‍🤝‍🧑 2 M / 1 F
+                            </span>
+<span class="text-label-sm text-outline">White Honda Civic</span>
+</div>
+<!-- Mini Static Map Preview -->
+<div class="w-full h-40 bg-surface-container rounded-xl overflow-hidden relative border border-outline-variant">
+<img class="w-full h-full object-cover opacity-80" data-location="Karachi" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCpoaLR14XoirbyHclyzgPeWFPXxUL2JKZhA7OmNe-yR5mWVE3aX9-h5omqd7Oe6DA8oQoOFfX1au-IFAtMn-Sd1CM42h60aqzNd4iLoHPYurwMf_L5I1FH24GaPB7b6VFEJJQSTInunASDqhQ3BYQicDiAavAkeK4JAQVdviIa2mQCMCO736z6stxFkxMmFiDUBSMjRP36aljwd6pIEX7GuWQTZZEMNfWhduM4rn6IQdjcNSkc9ZDNdkg9yvxRZwCfXZ5Nh2E6QH6i"/>
+<div class="absolute inset-0 flex flex-col justify-center px-4">
+<div class="flex items-center gap-3 bg-surface-container-lowest/90 p-2 rounded-lg border border-outline-variant/30 backdrop-blur-sm">
+<div class="flex flex-col items-center gap-1">
+<div class="w-2 h-2 rounded-full bg-primary"></div>
+<div class="w-0.5 h-6 bg-outline-variant"></div>
+<div class="w-2 h-2 rounded-full bg-error"></div>
+</div>
+<div class="flex flex-col justify-between h-full">
+<p class="text-label-sm font-bold truncate">Gulshan-e-Iqbal</p>
+<p class="text-label-sm font-bold truncate">LUMS Campus</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Bottom Action Hint -->
+<div class="mt-stack-md flex justify-around items-center border-t border-outline-variant pt-stack-sm">
+<div class="flex flex-col items-center opacity-40">
+<span class="material-symbols-outlined text-error" data-icon="close">close</span>
+<span class="text-[10px] font-bold text-outline">SKIP</span>
+</div>
+<div class="flex flex-col items-center opacity-40">
+<span class="material-symbols-outlined text-primary" data-icon="check_circle">check_circle</span>
+<span class="text-[10px] font-bold text-outline">REQUEST</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Card 2 (Stacked Below) -->
+<div class="swipe-card z-20 translate-y-2 scale-95 opacity-80" id="card-2">
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-inset-equal h-full flex flex-col shadow-sm relative overflow-hidden">
+<div class="flex justify-between items-start mb-stack-md">
+<div class="flex items-center gap-3">
+<div class="w-12 h-12 rounded-full overflow-hidden border border-outline-variant">
+<img class="w-full h-full object-cover" data-alt="A bright and cheerful portrait of a young female university student driver. She has a warm smile and is wearing professional yet stylish attire. The image has a clean, high-contrast look with a dominant white and emerald green color scheme. The lighting is vibrant and soft, creating a high-trust, dependable atmosphere. Background shows a modern campus library." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCrxGCkU2ZZ9Dg5vbgZEv04OT9PNE_nSzxo81PXFJmj1n2wUkdNHr-fgtWmiPsTr1X9O-Rgl_Q9gbhsecGBIbVZcR9qGscTGchW3Ro17N-Sp6-xHZGVBSv-HmcSo-fsFVmbX51aoDsENjMFHcj_kIFstWQnxGkXT80mh4OaJuCIxSbdyfPDle3Uep2PB_0pPmqSUTs0bNuAGjJlw54q1iwgNuxqWUetWQQ-b7J9LNUIPtTkc8l3bAAL76FKqhHjMNWMU2-jg0yU1r5L"/>
+</div>
+<div>
+<h3 class="font-headline-md text-on-surface leading-tight">Sarah K.</h3>
+<div class="flex items-center bg-surface-container-high px-2 py-0.5 rounded-full mt-1">
+<span class="material-symbols-outlined text-[14px] text-primary" data-icon="star" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="text-label-sm ml-1 text-primary">5.0</span>
+</div>
+</div>
+</div>
+<div class="bg-primary text-on-primary px-3 py-1 rounded-lg">
+<span class="font-headline-md text-white">Rs. 120</span>
+</div>
+</div>
+<div class="space-y-stack-md flex-grow">
+<div class="flex justify-between items-end">
+<div>
+<p class="text-label-sm text-outline uppercase tracking-wider">Departure</p>
+<p class="font-headline-md text-primary">09:15 AM</p>
+</div>
+<div class="text-right">
+<span class="bg-surface-container text-on-surface-variant text-label-sm px-2 py-1 rounded-lg">1 seat left</span>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<span class="bg-surface-container-high text-on-surface text-label-md px-3 py-1 rounded-lg flex items-center gap-1">
+                                🧑‍🤝‍🧑 0 M / 2 F
+                            </span>
+<span class="text-label-sm text-outline">Silver Toyota Vitz</span>
+</div>
+<div class="w-full h-40 bg-surface-container rounded-xl overflow-hidden relative border border-outline-variant">
+<img class="w-full h-full object-cover opacity-80" data-location="Karachi" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDMUP7cWtmqdloD8cisc8UspfmLrd7cdDb2-xk6gR18E3qz4LUlBEPgcLIqBGFN-TOdKD6AprLsLibAk6KGpS07yQCPi1U266zKxrQZv-4ehs43ribrYs_DeClqbowDHsD9C32B5m1vL8v4cLBc4f0yF4c5hbODAIivtcgbmQVPynvhVvnhkCfW9Jnxg0qo3TFCTSbuBrqlZ9WvzoNQDYSnUxEmJdpT5xyxAMBfi72AQ_X-93b6azS9_FB-HACiFUOdxH0Frw3aOuBZ"/>
+<div class="absolute inset-0 flex flex-col justify-center px-4">
+<div class="flex items-center gap-3 bg-surface-container-lowest/90 p-2 rounded-lg border border-outline-variant/30 backdrop-blur-sm">
+<div class="flex flex-col items-center gap-1">
+<div class="w-2 h-2 rounded-full bg-primary"></div>
+<div class="w-0.5 h-6 bg-outline-variant"></div>
+<div class="w-2 h-2 rounded-full bg-error"></div>
+</div>
+<div class="flex flex-col justify-between h-full">
+<p class="text-label-sm font-bold truncate">North Nazimabad</p>
+<p class="text-label-sm font-bold truncate">IBA Main Campus</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Empty State (Hidden) -->
+<div class="hidden flex flex-col items-center justify-center text-center mt-20" id="empty-state">
+<span class="material-symbols-outlined text-primary text-6xl mb-4" data-icon="explore_off">explore_off</span>
+<h2 class="font-headline-lg text-on-surface mb-2">No more rides today</h2>
+<p class="text-outline max-w-xs mx-auto">Check back later or try changing your search parameters.</p>
+<button class="mt-stack-lg bg-primary text-on-primary font-headline-md px-inset-squish py-3 rounded-xl transition-transform active:scale-95" onclick="location.reload()">
+                Refresh Feed
+            </button>
+</div>
+</main>
+<!-- Bottom Navigation Shell -->
+<nav class="fixed bottom-0 w-full z-50 rounded-t-xl bg-surface border-t border-outline-variant flex justify-around items-center px-4 py-2 w-full">
+<a class="flex flex-col items-center justify-center text-primary font-bold hover:bg-surface-container-highest transition-colors active:opacity-80 rounded-lg p-2" href="#">
+<span class="material-symbols-outlined" data-icon="home" style="font-variation-settings: 'FILL' 1;">home</span>
+<span class="font-label-sm text-label-sm">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center text-secondary hover:bg-surface-container-highest transition-colors active:opacity-80 rounded-lg p-2" href="#">
+<span class="material-symbols-outlined" data-icon="add_circle">add_circle</span>
+<span class="font-label-sm text-label-sm">Drive</span>
+</a>
+<a class="flex flex-col items-center justify-center text-secondary hover:bg-surface-container-highest transition-colors active:opacity-80 rounded-lg p-2" href="#">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+<span class="font-label-sm text-label-sm">Requests</span>
+</a>
+<a class="flex flex-col items-center justify-center text-secondary hover:bg-surface-container-highest transition-colors active:opacity-80 rounded-lg p-2" href="#">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+<span class="font-label-sm text-label-sm">Profile</span>
+</a>
+</nav>
+<script>
+        const cardContainer = document.getElementById('card-container');
+        const cards = Array.from(document.querySelectorAll('.swipe-card'));
+        const emptyState = document.getElementById('empty-state');
+        let currentCardIndex = 0;
+
+        function initSwipe(card) {
+            let startX = 0;
+            let currentX = 0;
+            let isDragging = false;
+
+            card.addEventListener('mousedown', start);
+            card.addEventListener('touchstart', start);
+
+            function start(e) {
+                isDragging = true;
+                startX = e.type === 'touchstart' ? e.touches[0].clientX : e.clientX;
+                card.style.transition = 'none';
+            }
+
+            window.addEventListener('mousemove', move);
+            window.addEventListener('touchmove', move);
+
+            function move(e) {
+                if (!isDragging) return;
+                currentX = e.type === 'touchmove' ? e.touches[0].clientX : e.clientX;
+                const diffX = currentX - startX;
+                const rotation = diffX / 10;
+                card.style.transform = `translateX(${diffX}px) rotate(${rotation}deg)`;
+
+                // Simple Visual feedback
+                if (diffX > 50) {
+                    card.style.borderColor = 'var(--tw-primary)';
+                } else if (diffX < -50) {
+                    card.style.borderColor = 'var(--tw-error)';
+                } else {
+                    card.style.borderColor = 'transparent';
+                }
+            }
+
+            window.addEventListener('mouseup', end);
+            window.addEventListener('touchend', end);
+
+            function end() {
+                if (!isDragging) return;
+                isDragging = false;
+                const diffX = currentX - startX;
+                card.style.transition = 'transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s ease';
+
+                if (Math.abs(diffX) > 120) {
+                    // Swipe Out
+                    const direction = diffX > 0 ? 1 : -1;
+                    card.style.transform = `translateX(${direction * 1000}px) rotate(${direction * 45}deg)`;
+                    card.style.opacity = '0';
+                    setTimeout(() => {
+                        card.remove();
+                        currentCardIndex++;
+                        updateStack();
+                    }, 300);
+                } else {
+                    // Snap Back
+                    card.style.transform = 'translateX(0) rotate(0)';
+                    card.style.borderColor = 'transparent';
+                }
+            }
+        }
+
+        function updateStack() {
+            const remainingCards = cardContainer.querySelectorAll('.swipe-card');
+            if (remainingCards.length > 0) {
+                const topCard = remainingCards[0];
+                topCard.classList.remove('translate-y-2', 'scale-95', 'opacity-80');
+                topCard.classList.add('z-30');
+                topCard.style.transform = 'translateY(0) scale(1)';
+                topCard.style.opacity = '1';
+                
+                // Add swipe to next card
+                initSwipe(topCard);
+            } else {
+                cardContainer.classList.add('hidden');
+                emptyState.classList.remove('hidden');
+            }
+        }
+
+        // Initialize the first card
+        initSwipe(cards[0]);
+    </script>
+</body></html>

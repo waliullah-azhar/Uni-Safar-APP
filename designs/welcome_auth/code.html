@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>UniRide | Authentication</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "tertiary": "#3a3c3e",
+                    "outline": "#6f7973",
+                    "background": "#f9f9ff",
+                    "surface-variant": "#dce2f7",
+                    "surface-container": "#e9edff",
+                    "on-error-container": "#93000a",
+                    "on-secondary": "#ffffff",
+                    "on-primary-fixed-variant": "#00513b",
+                    "primary": "#004532",
+                    "inverse-surface": "#293040",
+                    "secondary-fixed-dim": "#c6c6c7",
+                    "secondary": "#5d5f5f",
+                    "on-background": "#141b2b",
+                    "surface-tint": "#1b6b51",
+                    "primary-fixed-dim": "#8bd6b6",
+                    "surface-container-highest": "#dce2f7",
+                    "outline-variant": "#bec9c2",
+                    "tertiary-fixed": "#e1e2e4",
+                    "on-surface-variant": "#3f4944",
+                    "on-primary-container": "#8bd6b7",
+                    "tertiary-container": "#515355",
+                    "on-tertiary-fixed-variant": "#444749",
+                    "on-tertiary-container": "#c5c7c9",
+                    "secondary-container": "#dfe0e0",
+                    "surface-bright": "#f9f9ff",
+                    "on-tertiary-fixed": "#191c1e",
+                    "surface-dim": "#d3daef",
+                    "on-primary-fixed": "#002116",
+                    "inverse-primary": "#8bd6b6",
+                    "primary-container": "#065f46",
+                    "surface-container-low": "#f1f3ff",
+                    "on-secondary-fixed-variant": "#454747",
+                    "on-primary": "#ffffff",
+                    "on-secondary-fixed": "#1a1c1c",
+                    "on-secondary-container": "#616363",
+                    "surface-container-high": "#e1e8fd",
+                    "on-surface": "#141b2b",
+                    "on-tertiary": "#ffffff",
+                    "primary-fixed": "#a6f2d1",
+                    "error-container": "#ffdad6",
+                    "inverse-on-surface": "#edf0ff",
+                    "secondary-fixed": "#e2e2e2",
+                    "tertiary-fixed-dim": "#c5c6c8",
+                    "on-error": "#ffffff",
+                    "surface-container-lowest": "#ffffff",
+                    "surface": "#f9f9ff",
+                    "error": "#ba1a1a"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "stack-md": "16px",
+                    "inset-squish": "12px 24px",
+                    "inset-equal": "20px",
+                    "stack-sm": "8px",
+                    "container-margin": "24px",
+                    "stack-lg": "32px",
+                    "unit": "4px",
+                    "gutter": "16px"
+            },
+            "fontFamily": {
+                    "headline-xl": ["Manrope"],
+                    "headline-lg-mobile": ["Manrope"],
+                    "label-md": ["Manrope"],
+                    "label-sm": ["Manrope"],
+                    "headline-md": ["Manrope"],
+                    "headline-lg": ["Manrope"],
+                    "body-md": ["Manrope"],
+                    "body-lg": ["Manrope"]
+            },
+            "fontSize": {
+                    "headline-xl": ["40px", {"lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+                    "headline-lg-mobile": ["28px", {"lineHeight": "34px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                    "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.02em", "fontWeight": "600"}],
+                    "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "700"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .auth-card-transition {
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .form-fade-in {
+            animation: fadeIn 0.4s ease-out forwards;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        body {
+            font-family: 'Manrope', sans-serif;
+            background-color: #f9f9ff;
+        }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface text-on-surface min-h-screen flex flex-col md:flex-row overflow-hidden">
+<!-- Left Side: Visual/Hero Section -->
+<div class="hidden md:flex md:w-1/2 relative bg-primary items-center justify-center overflow-hidden">
+<div class="absolute inset-0 z-0">
+<div class="w-full h-full bg-cover bg-center opacity-60" data-alt="A cinematic, high-contrast photograph of a diverse group of university students walking across a modern metropolitan campus during a golden hour sunset. The scene is bathed in warm, directional light that highlights the architectural minimalism of the buildings. The image uses a professional color grade focusing on deep greens and soft creams to match a high-trust, authoritative corporate aesthetic. The overall mood is optimistic, communal, and academically focused." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDztaYqVAlRZnOTTsBNat2Gvycb9A5dhI3YL8sEE1eqwgv7e_pRHpNg6LadJHrTjBC45t56_FraUsjjtK3Uxa2TokqJUZmqO3ulWzhE7vm-fFjjK_ZgWdWSswQfy74yuLi5BooPQiBY2XVC7NSD4M5oshXKvXt1rwthbfb-2SpzuIpBuJULnMyt-kFvZadQJCWkxNehtcesvDV8o27RDul4dq8AXpSPosOVQnfJ_ifOO9WsPJXhcI6o7surAB0vM6_5M8FKuQN-3OTq')">
+</div>
+<div class="absolute inset-0 bg-gradient-to-br from-primary via-primary/80 to-transparent"></div>
+</div>
+<div class="relative z-10 p-12 text-on-primary">
+<h1 class="font-headline-xl text-headline-xl mb-4">UniRide</h1>
+<p class="font-body-lg text-body-lg max-w-md opacity-90 leading-relaxed">
+                Empowering the academic community with reliable, safe, and efficient transit solutions. Join thousands of students coordinating their daily commutes seamlessly.
+            </p>
+<div class="mt-stack-lg flex gap-gutter">
+<div class="flex flex-col">
+<span class="font-headline-md text-headline-md">15k+</span>
+<span class="font-label-sm text-label-sm opacity-70">Active Students</span>
+</div>
+<div class="w-px h-12 bg-on-primary/20"></div>
+<div class="flex flex-col">
+<span class="font-headline-md text-headline-md">200+</span>
+<span class="font-label-sm text-label-sm opacity-70">Universities</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Side: Authentication Canvas -->
+<div class="w-full md:w-1/2 h-full flex flex-col overflow-y-auto bg-surface">
+<!-- Top App Bar (Mobile Visuals) -->
+<header class="flex justify-between items-center px-container-margin py-stack-md w-full sticky top-0 z-50 bg-surface/80 backdrop-blur-md border-b border-outline-variant md:border-none">
+<div class="text-headline-md font-headline-md text-primary">UniRide</div>
+<div class="md:hidden">
+<span class="material-symbols-outlined text-primary">school</span>
+</div>
+</header>
+<main class="flex-grow flex flex-col items-center justify-center px-container-margin py-stack-lg">
+<div class="w-full max-w-md">
+<!-- Toggle Switcher -->
+<div class="bg-surface-container rounded-xl p-1 flex mb-stack-lg">
+<button class="flex-1 py-2 rounded-lg font-label-md text-label-md transition-all duration-300 bg-surface text-primary shadow-sm" id="toggle-signin" onclick="switchTab('signin')">
+                        Sign In
+                    </button>
+<button class="flex-1 py-2 rounded-lg font-label-md text-label-md transition-all duration-300 text-secondary hover:bg-surface-container-highest" id="toggle-signup" onclick="switchTab('signup')">
+                        Create Account
+                    </button>
+</div>
+<!-- Auth Title Section -->
+<div class="mb-stack-lg">
+<h2 class="font-headline-lg text-headline-lg text-on-surface mb-2" id="auth-heading">Welcome Back</h2>
+<p class="font-body-md text-body-md text-on-surface-variant" id="auth-subheading">Access your dashboard and active rides.</p>
+</div>
+<!-- Forms -->
+<form class="space-y-stack-md" id="auth-form">
+<!-- Dynamic Fields Container -->
+<div class="hidden space-y-stack-md" id="signup-fields">
+<div class="space-y-1">
+<label class="font-label-sm text-label-sm text-on-surface-variant ml-1">Full Name</label>
+<input class="w-full h-12 px-4 rounded-xl border border-outline-variant focus:border-primary focus:ring-1 focus:ring-primary bg-white transition-all font-body-md text-body-md" placeholder="Antigravity" type="text"/>
+</div>
+<div class="grid grid-cols-2 gap-gutter">
+<div class="space-y-1">
+<label class="font-label-sm text-label-sm text-on-surface-variant ml-1">University Name</label>
+<input class="w-full h-12 px-4 rounded-xl border border-outline-variant focus:border-primary focus:ring-1 focus:ring-primary bg-white transition-all font-body-md text-body-md" placeholder="DHAC" type="text"/>
+</div>
+<div class="space-y-1">
+<label class="font-label-sm text-label-sm text-on-surface-variant ml-1">Gender</label>
+<div class="relative">
+<select class="w-full h-12 px-4 appearance-none rounded-xl border border-outline-variant focus:border-primary focus:ring-1 focus:ring-primary bg-white transition-all font-body-md text-body-md">
+<option disabled="" selected="" value="">Select</option>
+<option value="male">Male</option>
+<option value="female">Female</option>
+<option value="other">Other</option>
+<option value="private">Prefer not to say</option>
+</select>
+<span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-secondary">expand_more</span>
+</div>
+</div>
+</div>
+<div class="space-y-1">
+<label class="font-label-sm text-label-sm text-on-surface-variant ml-1">Phone Number</label>
+<input class="w-full h-12 px-4 rounded-xl border border-outline-variant focus:border-primary focus:ring-1 focus:ring-primary bg-white transition-all font-body-md text-body-md" placeholder="92 ---------" type="tel"/>
+</div>
+</div>
+<!-- Shared Fields -->
+<div class="space-y-stack-md">
+<div class="space-y-1">
+<label class="font-label-sm text-label-sm text-on-surface-variant ml-1">Student Email</label>
+<input class="w-full h-12 px-4 rounded-xl border border-outline-variant focus:border-primary focus:ring-1 focus:ring-primary bg-white transition-all font-body-md text-body-md" placeholder="student@university.edu" type="email"/>
+</div>
+<div class="space-y-1">
+<div class="flex justify-between items-center ml-1">
+<label class="font-label-sm text-label-sm text-on-surface-variant">Password</label>
+<a class="font-label-sm text-label-sm text-primary hover:underline" href="#" id="forgot-password">Forgot?</a>
+</div>
+<div class="relative">
+<input class="w-full h-12 px-4 rounded-xl border border-outline-variant focus:border-primary focus:ring-1 focus:ring-primary bg-white transition-all font-body-md text-body-md" placeholder="••••••••" type="password"/>
+<button class="absolute right-3 top-1/2 -translate-y-1/2 text-secondary" type="button">
+<span class="material-symbols-outlined">visibility</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Action Button -->
+<div class="pt-stack-md">
+<button class="w-full h-12 bg-primary text-white font-label-md text-label-md rounded-xl shadow-lg hover:brightness-110 active:scale-[0.98] transition-all flex items-center justify-center gap-2" id="submit-btn" type="submit">
+<span>Sign In</span>
+<span class="material-symbols-outlined text-[20px]">arrow_forward</span>
+</button>
+</div>
+<div class="flex items-center gap-4 py-stack-md">
+<div class="h-px flex-grow bg-outline-variant"></div>
+<span class="font-label-sm text-label-sm text-outline">OR CONTINUE WITH</span>
+<div class="h-px flex-grow bg-outline-variant"></div>
+</div>
+<div class="grid grid-cols-2 gap-gutter">
+<button class="flex items-center justify-center gap-2 h-12 border border-outline-variant rounded-xl hover:bg-surface-container-low transition-colors active:scale-95" type="button">
+<img alt="Google" class="w-5 h-5" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDRE-IsoQgGtKlKn6ug-qTgTU9o_tFIaPRZumiODlpzsWrUPWJb0qhC-AkcVyg3ibxzxe7EGenH_aqGSPsqcZxKDvZvM9mNHC0so-nQS7OvbYNcvKzMfKEetg93DASYeNnX_iFNHK1-AwrcrnDZnqTQIGPqwyArupnMROTN6d2KPAXddFuACxjo0zcMm_FA3pG6rMZgpic9orf6zM4RFLjUiVr1OsNPul9Dziw_TYj7qmX4PaoKTi5G1wCqB0qG_aTs5NMsmut0EGpO"/>
+<span class="font-label-md text-label-md text-on-surface">Google</span>
+</button>
+<button class="flex items-center justify-center gap-2 h-12 border border-outline-variant rounded-xl hover:bg-surface-container-low transition-colors active:scale-95" type="button">
+<span class="material-symbols-outlined text-[#000000]">apps</span>
+<span class="font-label-md text-label-md text-on-surface">Apple</span>
+</button>
+</div>
+</form>
+<!-- Legal Note -->
+<p class="mt-stack-lg text-center font-label-sm text-label-sm text-outline-variant px-stack-md">
+                    By continuing, you agree to our <a class="text-secondary underline" href="#">Terms of Service</a> and <a class="text-secondary underline" href="#">Privacy Policy</a>.
+                </p>
+</div>
+</main>
+<footer class="p-container-margin text-center">
+<p class="font-label-sm text-label-sm text-secondary-fixed-dim">© 2024 UniRide Transit Systems. All rights reserved.</p>
+</footer>
+</div>
+<script>
+        function switchTab(tab) {
+            const signupFields = document.getElementById('signup-fields');
+            const heading = document.getElementById('auth-heading');
+            const subheading = document.getElementById('auth-subheading');
+            const submitBtn = document.getElementById('submit-btn');
+            const forgotLink = document.getElementById('forgot-password');
+            const toggleSignIn = document.getElementById('toggle-signin');
+            const toggleSignUp = document.getElementById('toggle-signup');
+
+            if (tab === 'signup') {
+                signupFields.classList.remove('hidden');
+                signupFields.classList.add('form-fade-in');
+                heading.innerText = 'Create Account';
+                subheading.innerText = 'Join your campus transit network.';
+                submitBtn.querySelector('span:first-child').innerText = 'Create Account';
+                forgotLink.classList.add('invisible');
+                
+                // Toggle styles
+                toggleSignUp.classList.add('bg-surface', 'text-primary', 'shadow-sm');
+                toggleSignUp.classList.remove('text-secondary', 'hover:bg-surface-container-highest');
+                toggleSignIn.classList.remove('bg-surface', 'text-primary', 'shadow-sm');
+                toggleSignIn.classList.add('text-secondary', 'hover:bg-surface-container-highest');
+            } else {
+                signupFields.classList.add('hidden');
+                signupFields.classList.remove('form-fade-in');
+                heading.innerText = 'Welcome Back';
+                subheading.innerText = 'Access your dashboard and active rides.';
+                submitBtn.querySelector('span:first-child').innerText = 'Sign In';
+                forgotLink.classList.remove('invisible');
+
+                // Toggle styles
+                toggleSignIn.classList.add('bg-surface', 'text-primary', 'shadow-sm');
+                toggleSignIn.classList.remove('text-secondary', 'hover:bg-surface-container-highest');
+                toggleSignUp.classList.remove('bg-surface', 'text-primary', 'shadow-sm');
+                toggleSignUp.classList.add('text-secondary', 'hover:bg-surface-container-highest');
+            }
+        }
+
+        // Simple interaction for inputs
+        document.querySelectorAll('input, select').forEach(el => {
+            el.addEventListener('focus', () => {
+                el.parentElement.classList.add('scale-[1.01]');
+            });
+            el.addEventListener('blur', () => {
+                el.parentElement.classList.remove('scale-[1.01]');
+            });
+        });
+
+        // Form submission prevention for demo
+        document.getElementById('auth-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('submit-btn');
+            const originalContent = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<span class="material-symbols-outlined animate-spin">progress_activity</span>';
+            
+            setTimeout(() => {
+                btn.innerHTML = 'Success!';
+                btn.classList.replace('bg-primary', 'bg-green-600');
+                setTimeout(() => {
+                    btn.disabled = false;
+                    btn.innerHTML = originalContent;
+                    btn.classList.replace('bg-green-600', 'bg-primary');
+                }, 2000);
+            }, 1500);
+        });
+    </script>
+</body></html>
