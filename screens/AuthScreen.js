@@ -104,6 +104,7 @@ export const AuthScreen = () => {
   const [university, setUniversity] = useState('');
   const [gender, setGender] = useState('');
   const [phone, setPhone] = useState('');
+  const [isAdminSignup, setIsAdminSignup] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -168,7 +169,15 @@ export const AuthScreen = () => {
         
         // Call Supabase signUp which automatically registers the user
         // and sends the native verification OTP email.
-        const success = await signUp({ fullName, university, gender, email, password, phone }, false);
+        const success = await signUp({
+          fullName,
+          university,
+          gender,
+          email,
+          password,
+          phone,
+          role: isAdminSignup ? 'admin' : 'student'
+        }, false);
         setLoading(false);
         if (success) {
           setVerificationModalVisible(true);
@@ -581,6 +590,19 @@ export const AuthScreen = () => {
                   ))}
                 </View>
               ) : null}
+              {/* Admin toggle checkbox */}
+              <TouchableOpacity
+                style={styles.checkboxRow}
+                onPress={() => setIsAdminSignup(!isAdminSignup)}
+              >
+                <Ionicons
+                  name={isAdminSignup ? 'checkbox' : 'square-outline'}
+                  size={20}
+                  color={COLORS.primary}
+                  style={{ marginRight: 8 }}
+                />
+                <Text style={styles.checkboxText}>Sign up as University Administrator (Staff)</Text>
+              </TouchableOpacity>
             </View>
           ) : null}
 
@@ -1163,5 +1185,17 @@ const styles = StyleSheet.create({
   },
   universityListScroll: {
     maxHeight: 200,
+  },
+  checkboxRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: SPACING.stackSm,
+    marginBottom: SPACING.stackSm,
+    paddingHorizontal: 4,
+  },
+  checkboxText: {
+    fontSize: 13,
+    color: COLORS.text,
+    fontWeight: '600',
   },
 });

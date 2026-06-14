@@ -18,6 +18,7 @@ import { PostRideScreen } from './screens/PostRideScreen';
 import { RequestsScreen } from './screens/RequestsScreen';
 import { ProfileScreen } from './screens/ProfileScreen';
 import { ReviewModal } from './screens/ReviewModal';
+import { AdminScreen } from './screens/AdminScreen';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -66,13 +67,55 @@ function MainTabNavigator() {
   );
 }
 
+function AdminTabNavigator() {
+  const insets = useSafeAreaInsets();
+  const bottomPadding = insets.bottom > 0 ? insets.bottom + 6 : (Platform.OS === 'ios' ? 28 : 12);
+  const barHeight = 54 + bottomPadding;
+
+  return (
+    <Tab.Navigator
+      screenOptions={({ route }) => ({
+        tabBarIcon: ({ color, size, focused }) => {
+          let iconName;
+
+          if (route.name === 'Verify') {
+            iconName = focused ? 'checkbox' : 'checkbox-outline';
+          } else if (route.name === 'Profile') {
+            iconName = focused ? 'person' : 'person-outline';
+          }
+
+          return <Ionicons name={iconName} size={size} color={color} />;
+        },
+        tabBarActiveTintColor: COLORS.primary,
+        tabBarInactiveTintColor: COLORS.textSecondary,
+        tabBarStyle: {
+          borderTopWidth: 1,
+          borderTopColor: COLORS.outlineVariant,
+          backgroundColor: COLORS.surface,
+          paddingTop: 8,
+          paddingBottom: bottomPadding,
+          height: barHeight,
+        },
+        headerShown: false,
+      })}
+    >
+      <Tab.Screen name="Verify" component={AdminScreen} />
+      <Tab.Screen name="Profile" component={ProfileScreen} />
+    </Tab.Navigator>
+  );
+}
+
 function NavigationContent() {
-  const { isAuthenticated } = useAppContext();
+  const { isAuthenticated, currentUser } = useAppContext();
 
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       {!isAuthenticated ? (
         <Stack.Screen name="Auth" component={AuthScreen} />
+      ) : currentUser?.role === 'admin' ? (
+        <>
+          <Stack.Screen name="AdminTabs" component={AdminTabNavigator} />
+        </>
       ) : (
         <>
           <Stack.Screen name="MainTabs" component={MainTabNavigator} />

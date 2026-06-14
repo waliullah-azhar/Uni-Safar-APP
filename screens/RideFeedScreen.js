@@ -214,225 +214,259 @@ export const RideFeedScreen = ({ navigation }) => {
         </View>
       </View>
 
-      {/* Verification Alert Banner */}
-      {currentUser?.verificationStatus === 'unverified' && (
-        <View style={{ paddingHorizontal: SPACING.padding, marginBottom: SPACING.stackSm }}>
-          <View style={[styles.bannerCard, styles.bannerCardWarning]}>
-            <View style={styles.bannerIconWrapper}>
-              <Ionicons name="warning-outline" size={20} color="#b45309" />
-            </View>
-            <View style={styles.bannerTextContainer}>
-              <Text style={styles.bannerTitle}>Profile Incomplete</Text>
-              <Text style={styles.bannerDesc}>
-                Upload your university card details in the Profile tab to request or publish rides.
-              </Text>
-              <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 8 }}>
-                <TouchableOpacity onPress={() => navigation.navigate('Profile')} style={styles.bannerActionBtn}>
-                  <Text style={styles.bannerActionText}>Complete Setup</Text>
-                  <Ionicons name="arrow-forward" size={12} color={COLORS.primary} style={{ marginLeft: 4 }} />
-                </TouchableOpacity>
-                <TouchableOpacity onPress={() => { verifyProfileMock(); Alert.alert('Verified', 'Mock approved successfully!'); }} style={[styles.bannerActionBtn, { backgroundColor: '#fef3c7', borderColor: '#fde68a' }]}>
-                  <Text style={[styles.bannerActionText, { color: '#b45309' }]}>Debug: Instantly Verify</Text>
-                </TouchableOpacity>
+      {/* Conditional verification screens */}
+      {currentUser?.verificationStatus !== 'verified' ? (
+        <ScrollView contentContainerStyle={styles.lockScrollContent} showsVerticalScrollIndicator={false}>
+          {/* Verification Alert Banner */}
+          {currentUser?.verificationStatus === 'unverified' && (
+            <View style={{ paddingHorizontal: SPACING.padding, marginBottom: SPACING.stackSm, marginTop: SPACING.stackMd }}>
+              <View style={[styles.bannerCard, styles.bannerCardWarning]}>
+                <View style={styles.bannerIconWrapper}>
+                  <Ionicons name="warning-outline" size={20} color="#b45309" />
+                </View>
+                <View style={styles.bannerTextContainer}>
+                  <Text style={styles.bannerTitle}>Profile Incomplete</Text>
+                  <Text style={styles.bannerDesc}>
+                    Upload your university card details in the Profile tab to request or publish rides.
+                  </Text>
+                  <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 8 }}>
+                    <TouchableOpacity onPress={() => navigation.navigate('Profile')} style={styles.bannerActionBtn}>
+                      <Text style={styles.bannerActionText}>Complete Setup</Text>
+                      <Ionicons name="arrow-forward" size={12} color={COLORS.primary} style={{ marginLeft: 4 }} />
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() => { verifyProfileMock(); Alert.alert('Verified', 'Mock approved successfully!'); }} style={[styles.bannerActionBtn, { backgroundColor: '#fef3c7', borderColor: '#fde68a' }]}>
+                      <Text style={[styles.bannerActionText, { color: '#b45309' }]}>Debug: Instantly Verify</Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
               </View>
             </View>
-          </View>
-        </View>
-      )}
+          )}
 
-      {currentUser?.verificationStatus === 'pending' && (
-        <View style={{ paddingHorizontal: SPACING.padding, marginBottom: SPACING.stackSm }}>
-          <View style={[styles.bannerCard, styles.bannerCardPending]}>
-            <View style={styles.bannerIconWrapper}>
-              <Ionicons name="time-outline" size={20} color="#2563eb" />
+          {currentUser?.verificationStatus === 'pending' && (
+            <View style={{ paddingHorizontal: SPACING.padding, marginBottom: SPACING.stackSm, marginTop: SPACING.stackMd }}>
+              <View style={[styles.bannerCard, styles.bannerCardPending]}>
+                <View style={styles.bannerIconWrapper}>
+                  <Ionicons name="time-outline" size={20} color="#2563eb" />
+                </View>
+                <View style={styles.bannerTextContainer}>
+                  <Text style={styles.bannerTitle}>Verification Pending</Text>
+                  <Text style={styles.bannerDesc}>
+                    Your details are currently under review. Only verified students can join or post rides.
+                  </Text>
+                  <TouchableOpacity onPress={() => { verifyProfileMock(); Alert.alert('Verified', 'Mock approved successfully!'); }} style={[styles.bannerActionBtn, { backgroundColor: '#dbeafe', borderColor: '#bfdbfe', marginTop: 8 }]}>
+                    <Text style={[styles.bannerActionText, { color: '#2563eb' }]}>Debug: Approve Profile</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
             </View>
-            <View style={styles.bannerTextContainer}>
-              <Text style={styles.bannerTitle}>Verification Pending</Text>
-              <Text style={styles.bannerDesc}>
-                Your details are currently under review. Only verified students can join or post rides.
-              </Text>
-              <TouchableOpacity onPress={() => { verifyProfileMock(); Alert.alert('Verified', 'Mock approved successfully!'); }} style={[styles.bannerActionBtn, { backgroundColor: '#dbeafe', borderColor: '#bfdbfe', marginTop: 8 }]}>
-                <Text style={[styles.bannerActionText, { color: '#2563eb' }]}>Debug: Approve Profile</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </View>
-      )}
+          )}
 
-      {/* Search Bar & Filter Button */}
-      <View style={styles.searchContainer}>
-        <View style={styles.searchBar}>
-          <Ionicons name="search" size={20} color={COLORS.outline} style={styles.searchIcon} />
-          <TextInput
-            style={styles.searchInput}
-            placeholder="Search University, Area, or Date"
-            placeholderTextColor={COLORS.textSecondary}
-            value={searchQuery}
-            onChangeText={(text) => {
-              setSearchQuery(text);
-            }}
-          />
-        </View>
-        <TouchableOpacity
-          onPress={() => setFilterVisible(true)}
-          style={[
-            styles.filterBtn,
-            (genderPref !== 'Any' || maxFare < 500 || customFareInput.trim() !== '' || vehicleTypePref !== 'All' || sortBy !== 'none') && styles.filterBtnActive,
-          ]}
-        >
-          <Ionicons
-            name="funnel"
-            size={18}
-            color={
-              (genderPref !== 'Any' || maxFare < 500 || customFareInput.trim() !== '' || vehicleTypePref !== 'All' || sortBy !== 'none')
-                ? COLORS.white
-                : COLORS.primaryContainer
-            }
-          />
-        </TouchableOpacity>
-      </View>
-
-      {/* Scrollable Rides List */}
-      <ScrollView contentContainerStyle={styles.feedScrollContent} showsVerticalScrollIndicator={false}>
-        {sortedRides.length > 0 ? (
-          sortedRides.map((ride) => {
-            const acceptedRequest = (history || []).find(
-              (h) => h.type === 'rider' && h.rideId === ride.id && h.status === 'COMPLETED'
-            );
-            const pendingRequest = (history || []).find(
-              (h) => h.type === 'rider' && h.rideId === ride.id && (h.status === 'PENDING' || h.status === 'COUNTERED')
-            );
-
-            return (
-              <TouchableOpacity
-                key={ride.id}
-                activeOpacity={0.9}
-                onPress={() => navigation.navigate('RideDetails', { rideId: ride.id })}
-                style={styles.rideItemCard}
-              >
-                {/* Card Top: Driver Profile & Fare */}
-                <View style={styles.rideCardTop}>
-                  <View style={styles.driverRowMini}>
-                    <Image source={{ uri: ride.driverPhoto }} style={styles.driverPhotoMini} />
-                    <View style={styles.driverMetaMini}>
-                      <Text style={styles.driverNameMini}>{ride.driverName}</Text>
-                      <View style={styles.badgeMini}>
-                        <Ionicons name="star" size={10} color={COLORS.primary} style={{ marginRight: 2 }} />
-                        <Text style={styles.badgeTextMini}>{ride.driverStar}</Text>
-                      </View>
-                    </View>
-                  </View>
-                  <View style={styles.fareTagMini}>
-                    <Text style={styles.fareTextMini}>Rs. {ride.fare}</Text>
-                  </View>
-                </View>
-
-                {/* Card Middle: Route & Times */}
-                <View style={styles.rideCardMiddle}>
-                  <View style={styles.routeContainerMini}>
-                    <View style={styles.routeIndicatorsMini}>
-                      <View style={styles.dotMini} />
-                      <View style={styles.lineMini} />
-                      <View style={[styles.dotMini, { backgroundColor: COLORS.primaryContainer }]} />
-                    </View>
-                    <View style={styles.routeTextColMini}>
-                      <Text numberOfLines={1} style={styles.routeTextMini}>{ride.origin.split(',')[0]}</Text>
-                      <Text numberOfLines={1} style={[styles.routeTextMini, { marginTop: 6 }]}>{ride.destination.split(',')[0]}</Text>
-                    </View>
-                  </View>
-                </View>
-
-                {/* Card Bottom: Meta info and request CTA */}
-                <View style={styles.rideCardBottom}>
-                  <View style={styles.metaRowMini}>
-                    <View style={styles.genderChipMini}>
-                      <Text style={styles.genderTextMini}>{ride.genderBreakdown}</Text>
-                    </View>
-                    {ride.vehicleType === 'EV' && (
-                      <View style={[styles.genderChipMini, { backgroundColor: 'rgba(0, 150, 100, 0.08)' }]}>
-                        <Text style={[styles.genderTextMini, { color: '#0f766e' }]}>⚡ EV</Text>
-                      </View>
-                    )}
-                    <Text style={styles.seatsTextMini}>{ride.seatsLeft} / {ride.totalSeats} seats left</Text>
-                  </View>
-                  
-                  <View style={styles.dividerMini} />
-
-                  <View style={styles.actionRowMini}>
-                    <View>
-                      <Text style={styles.departureLabelMini}>DEPARTURE</Text>
-                      <Text style={styles.departureValMini}>{ride.departure}</Text>
-                    </View>
-                    
-                    {ride.driverId === currentUser?.id ? (
-                      <TouchableOpacity
-                        style={[styles.quickRequestBtn, { backgroundColor: COLORS.error }]}
-                        onPress={(e) => {
-                          e.stopPropagation();
-                          handleCancelTrip(ride.id);
-                        }}
-                      >
-                        <Text style={styles.quickRequestBtnText}>Cancel Ride</Text>
-                        <Ionicons name="close-circle-outline" size={16} color={COLORS.white} style={{ marginLeft: 4 }} />
-                      </TouchableOpacity>
-                    ) : acceptedRequest ? (
-                      <TouchableOpacity
-                        style={[styles.quickRequestBtn, { backgroundColor: COLORS.error }]}
-                        onPress={(e) => {
-                          e.stopPropagation();
-                          handleCancelRequest(acceptedRequest.requestId);
-                        }}
-                      >
-                        <Text style={styles.quickRequestBtnText}>Cancel Ride</Text>
-                        <Ionicons name="close-circle-outline" size={16} color={COLORS.white} style={{ marginLeft: 4 }} />
-                      </TouchableOpacity>
-                    ) : pendingRequest ? (
-                      <TouchableOpacity
-                        style={[styles.quickRequestBtn, { backgroundColor: COLORS.outlineVariant }]}
-                        disabled={true}
-                      >
-                        <Text style={[styles.quickRequestBtnText, { color: COLORS.textSecondary }]}>Pending Request</Text>
-                        <Ionicons name="time-outline" size={16} color={COLORS.textSecondary} style={{ marginLeft: 4 }} />
-                      </TouchableOpacity>
-                    ) : ride.seatsLeft === 0 ? (
-                      <TouchableOpacity
-                        style={[styles.quickRequestBtn, { backgroundColor: COLORS.outlineVariant }]}
-                        disabled={true}
-                      >
-                        <Text style={[styles.quickRequestBtnText, { color: COLORS.textSecondary }]}>Occupied</Text>
-                        <Ionicons name="people" size={16} color={COLORS.textSecondary} style={{ marginLeft: 4 }} />
-                      </TouchableOpacity>
-                    ) : (
-                      <TouchableOpacity
-                        style={styles.quickRequestBtn}
-                        onPress={(e) => {
-                          e.stopPropagation();
-                          handleQuickRequest(ride);
-                        }}
-                      >
-                        <Text style={styles.quickRequestBtnText}>Request Ride</Text>
-                        <Ionicons name="arrow-forward-circle" size={16} color={COLORS.white} style={{ marginLeft: 4 }} />
-                      </TouchableOpacity>
-                    )}
-                  </View>
-                </View>
-              </TouchableOpacity>
-            );
-          })
-        ) : (
-          /* Empty State */
-          <View style={styles.emptyContainer}>
-            <Ionicons name="map-outline" size={80} color={COLORS.primary} />
-            <Text style={styles.emptyTitle}>No matching rides today</Text>
-            <Text style={styles.emptySubtitle}>
-              Check back later or try changing your search parameters.
+          <View style={styles.lockContainer}>
+            <Ionicons 
+              name={currentUser?.verificationStatus === 'pending' ? "time-outline" : "lock-closed-outline"} 
+              size={80} 
+              color={COLORS.primary} 
+              style={{ marginBottom: 20 }}
+            />
+            <Text style={styles.lockTitle}>
+              {currentUser?.verificationStatus === 'pending' ? "Verification Pending" : "Verification Required"}
             </Text>
-            <TouchableOpacity onPress={handleRefresh} style={styles.refreshBtn}>
-              <Text style={styles.refreshBtnText}>Reset Filters</Text>
+            <Text style={styles.lockSubtitle}>
+              {currentUser?.verificationStatus === 'pending' 
+                ? `Your student card has been uploaded. A staff member from ${currentUser.university || 'your campus'} is verifying your details. You will be able to view and request rides once approved.`
+                : `To ensure the safety of our peer network, only verified students and staff from ${currentUser.university || 'your campus'} can access active rides. Please upload your student ID card in the Profile tab.`}
+            </Text>
+            
+            <TouchableOpacity 
+              style={styles.lockBtn}
+              onPress={() => navigation.navigate('Profile')}
+            >
+              <Text style={styles.lockBtnText}>
+                {currentUser?.verificationStatus === 'pending' ? "Check Verification Status" : "Verify Profile Now"}
+              </Text>
+              <Ionicons name="arrow-forward" size={16} color={COLORS.white} style={{ marginLeft: 6 }} />
             </TouchableOpacity>
           </View>
-        )}
-      </ScrollView>
+        </ScrollView>
+      ) : (
+        <>
+          {/* Search Bar & Filter Button */}
+          <View style={styles.searchContainer}>
+            <View style={styles.searchBar}>
+              <Ionicons name="search" size={20} color={COLORS.outline} style={styles.searchIcon} />
+              <TextInput
+                style={styles.searchInput}
+                placeholder="Search University, Area, or Date"
+                placeholderTextColor={COLORS.textSecondary}
+                value={searchQuery}
+                onChangeText={(text) => {
+                  setSearchQuery(text);
+                }}
+              />
+            </View>
+            <TouchableOpacity
+              onPress={() => setFilterVisible(true)}
+              style={[
+                styles.filterBtn,
+                (genderPref !== 'Any' || maxFare < 500 || customFareInput.trim() !== '' || vehicleTypePref !== 'All' || sortBy !== 'none') && styles.filterBtnActive,
+              ]}
+            >
+              <Ionicons
+                name="funnel"
+                size={18}
+                color={
+                  (genderPref !== 'Any' || maxFare < 500 || customFareInput.trim() !== '' || vehicleTypePref !== 'All' || sortBy !== 'none')
+                    ? COLORS.white
+                    : COLORS.primaryContainer
+                }
+              />
+            </TouchableOpacity>
+          </View>
+
+          {/* Scrollable Rides List */}
+          <ScrollView contentContainerStyle={styles.feedScrollContent} showsVerticalScrollIndicator={false}>
+            {sortedRides.length > 0 ? (
+              sortedRides.map((ride) => {
+                const acceptedRequest = (history || []).find(
+                  (h) => h.type === 'rider' && h.rideId === ride.id && h.status === 'COMPLETED'
+                );
+                const pendingRequest = (history || []).find(
+                  (h) => h.type === 'rider' && h.rideId === ride.id && (h.status === 'PENDING' || h.status === 'COUNTERED')
+                );
+
+                return (
+                  <TouchableOpacity
+                    key={ride.id}
+                    activeOpacity={0.9}
+                    onPress={() => navigation.navigate('RideDetails', { rideId: ride.id })}
+                    style={styles.rideItemCard}
+                  >
+                    {/* Card Top: Driver Profile & Fare */}
+                    <View style={styles.rideCardTop}>
+                      <View style={styles.driverRowMini}>
+                        <Image source={{ uri: ride.driverPhoto }} style={styles.driverPhotoMini} />
+                        <View style={styles.driverMetaMini}>
+                          <Text style={styles.driverNameMini}>{ride.driverName}</Text>
+                          <View style={styles.badgeMini}>
+                            <Ionicons name="star" size={10} color={COLORS.primary} style={{ marginRight: 2 }} />
+                            <Text style={styles.badgeTextMini}>{ride.driverStar}</Text>
+                          </View>
+                        </View>
+                      </View>
+                      <View style={styles.fareTagMini}>
+                        <Text style={styles.fareTextMini}>Rs. {ride.fare}</Text>
+                      </View>
+                    </View>
+
+                    {/* Card Middle: Route & Times */}
+                    <View style={styles.rideCardMiddle}>
+                      <View style={styles.routeContainerMini}>
+                        <View style={styles.routeIndicatorsMini}>
+                          <View style={styles.dotMini} />
+                          <View style={styles.lineMini} />
+                          <View style={[styles.dotMini, { backgroundColor: COLORS.primaryContainer }]} />
+                        </View>
+                        <View style={styles.routeTextColMini}>
+                          <Text numberOfLines={1} style={styles.routeTextMini}>{ride.origin.split(',')[0]}</Text>
+                          <Text numberOfLines={1} style={[styles.routeTextMini, { marginTop: 6 }]}>{ride.destination.split(',')[0]}</Text>
+                        </View>
+                      </View>
+                    </View>
+
+                    {/* Card Bottom: Meta info and request CTA */}
+                    <View style={styles.rideCardBottom}>
+                      <View style={styles.metaRowMini}>
+                        <View style={styles.genderChipMini}>
+                          <Text style={styles.genderTextMini}>{ride.genderBreakdown}</Text>
+                        </View>
+                        {ride.vehicleType === 'EV' && (
+                          <View style={[styles.genderChipMini, { backgroundColor: 'rgba(0, 150, 100, 0.08)' }]}>
+                            <Text style={[styles.genderTextMini, { color: '#0f766e' }]}>⚡ EV</Text>
+                          </View>
+                        )}
+                        <Text style={styles.seatsTextMini}>{ride.seatsLeft} / {ride.totalSeats} seats left</Text>
+                      </View>
+                      
+                      <View style={styles.dividerMini} />
+
+                      <View style={styles.actionRowMini}>
+                        <View>
+                          <Text style={styles.departureLabelMini}>DEPARTURE</Text>
+                          <Text style={styles.departureValMini}>{ride.departure}</Text>
+                        </View>
+                        
+                        {ride.driverId === currentUser?.id ? (
+                          <TouchableOpacity
+                            style={[styles.quickRequestBtn, { backgroundColor: COLORS.error }]}
+                            onPress={(e) => {
+                              e.stopPropagation();
+                              handleCancelTrip(ride.id);
+                            }}
+                          >
+                            <Text style={styles.quickRequestBtnText}>Cancel Ride</Text>
+                            <Ionicons name="close-circle-outline" size={16} color={COLORS.white} style={{ marginLeft: 4 }} />
+                          </TouchableOpacity>
+                        ) : acceptedRequest ? (
+                          <TouchableOpacity
+                            style={[styles.quickRequestBtn, { backgroundColor: COLORS.error }]}
+                            onPress={(e) => {
+                              e.stopPropagation();
+                              handleCancelRequest(acceptedRequest.requestId);
+                            }}
+                          >
+                            <Text style={styles.quickRequestBtnText}>Cancel Ride</Text>
+                            <Ionicons name="close-circle-outline" size={16} color={COLORS.white} style={{ marginLeft: 4 }} />
+                          </TouchableOpacity>
+                        ) : pendingRequest ? (
+                          <TouchableOpacity
+                            style={[styles.quickRequestBtn, { backgroundColor: COLORS.outlineVariant }]}
+                            disabled={true}
+                          >
+                            <Text style={[styles.quickRequestBtnText, { color: COLORS.textSecondary }]}>Pending Request</Text>
+                            <Ionicons name="time-outline" size={16} color={COLORS.textSecondary} style={{ marginLeft: 4 }} />
+                          </TouchableOpacity>
+                        ) : ride.seatsLeft === 0 ? (
+                          <TouchableOpacity
+                            style={[styles.quickRequestBtn, { backgroundColor: COLORS.outlineVariant }]}
+                            disabled={true}
+                          >
+                            <Text style={[styles.quickRequestBtnText, { color: COLORS.textSecondary }]}>Occupied</Text>
+                            <Ionicons name="people" size={16} color={COLORS.textSecondary} style={{ marginLeft: 4 }} />
+                          </TouchableOpacity>
+                        ) : (
+                          <TouchableOpacity
+                            style={styles.quickRequestBtn}
+                            onPress={(e) => {
+                              e.stopPropagation();
+                              handleQuickRequest(ride);
+                            }}
+                          >
+                            <Text style={styles.quickRequestBtnText}>Request Ride</Text>
+                            <Ionicons name="arrow-forward-circle" size={16} color={COLORS.white} style={{ marginLeft: 4 }} />
+                          </TouchableOpacity>
+                        )}
+                      </View>
+                    </View>
+                  </TouchableOpacity>
+                );
+              })
+            ) : (
+              /* Empty State */
+              <View style={styles.emptyContainer}>
+                <Ionicons name="map-outline" size={80} color={COLORS.primary} />
+                <Text style={styles.emptyTitle}>No matching rides today</Text>
+                <Text style={styles.emptySubtitle}>
+                  Check back later or try changing your search parameters.
+                </Text>
+                <TouchableOpacity onPress={handleRefresh} style={styles.refreshBtn}>
+                  <Text style={styles.refreshBtnText}>Reset Filters</Text>
+                </TouchableOpacity>
+              </View>
+            )}
+          </ScrollView>
+        </>
+      )}
 
       {/* Advanced Filter Modal */}
       <Modal visible={filterVisible} animationType="slide" transparent>
@@ -1212,5 +1246,43 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '700',
     color: COLORS.white,
+  },
+  lockScrollContent: {
+    flexGrow: 1,
+    paddingBottom: 40,
+  },
+  lockContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 32,
+    paddingVertical: 60,
+  },
+  lockTitle: {
+    fontSize: 20,
+    fontWeight: '800',
+    color: COLORS.text,
+    marginBottom: 10,
+    textAlign: 'center',
+  },
+  lockSubtitle: {
+    fontSize: 14,
+    color: COLORS.textSecondary,
+    textAlign: 'center',
+    lineHeight: 22,
+    marginBottom: 28,
+  },
+  lockBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: COLORS.primary,
+    paddingHorizontal: 24,
+    paddingVertical: 14,
+    borderRadius: ROUNDED.md,
+  },
+  lockBtnText: {
+    color: COLORS.white,
+    fontWeight: '700',
+    fontSize: 14,
   },
 });

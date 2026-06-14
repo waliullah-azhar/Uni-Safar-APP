@@ -12,9 +12,11 @@
     },
     "userInterfaceStyle": "light",
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.unisafar.app"
     },
     "android": {
+      "package": "com.unisafar.app",
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/android-icon-foreground.png",
@@ -38,6 +40,7 @@
     },
     "updates": {
       "url": "https://u.expo.dev/59f0c05d-f900-4d3e-af4b-d1747578ea97"
-    }
+    },
+    "owner": "wali_ullah-07"
   }
 }

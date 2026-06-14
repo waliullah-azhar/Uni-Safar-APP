@@ -25,154 +25,30 @@ export const AppProvider = ({ children }) => {
 
   // 1. Current Logged-in User
   const [currentUser, setCurrentUser] = useState({
-    name: 'Marcus Chen',
-    university: 'Stanford University',
-    gender: 'Male',
+    name: '',
+    university: '',
+    gender: '',
     rating: 0.0,
-    bio: 'Computer Science Senior at Stanford. I commute between Palo Alto and San Francisco 3 times a week. Always on time, love a quiet ride or a good tech podcast. Non-smoker.',
+    bio: '',
     totalRides: 0,
     kmShared: '0',
-    email: 'marcus.chen@stanford.edu',
-    phone: '+1 (555) 728-1934',
-    password: 'password123',
+    email: '',
+    phone: '',
+    password: '',
     savedVehicles: [],
     profileImage: '',
     universityCardImage: '',
     universityCardExpiry: '',
     isProfileCompleted: false,
     verificationStatus: 'unverified', // 'unverified', 'pending', 'verified'
+    role: 'student',
   });
 
   const [registeredUsers, setRegisteredUsers] = useState([]);
 
 
   // 2. Active Rides Feed (Tinder Card Stack)
-  const [rides, setRides] = useState([
-    {
-      id: 'r1',
-      driverName: 'Ahmed R.',
-      driverStar: '4.9',
-      driverPhoto: 'https://lh3.googleusercontent.com/aida-public/AB6AXuC88doMv9OAZTseaXVCTDc92DVlbFeYBalE1p0RnElbTeO6bwI2SIXPCsJvCFSLs7YfXTBCjzEoCGm58L2IfdLudC55uc_Eo7a2cIDI2nDEgCpUsdBorgt5CGs2UmnEPGwYxmwJn0dxdvpd1kWVCDkitPBX_VqrJW8nGk3CU208uW9X_ND3L3V-4WwkKhVjLtWwKuiUIDIuKeaSHfNkigvhqBocLHnIdJvEsHeeQDG2bYgn-lX593ZFSDh1JCFqeEAGCKOt7_k89yNa',
-      fare: 150,
-      departure: '08:30 AM',
-      seatsLeft: 3,
-      totalSeats: 4,
-      genderBreakdown: '🧑‍🤝‍🧑 2 M / 1 F',
-      carDetails: 'White Honda Civic',
-      vehicleType: 'ICE',
-      origin: 'Gulberg III, Lahore',
-      destination: 'LUMS Campus, Lahore',
-      bio: 'Engineering Sophomore. Listening to tech podcasts, early bird.',
-      university: 'LUMS',
-      currentPool: [
-        { name: 'Sarah L.', photo: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDyr4JnvjuMJ0KvaaZKMBuH3pZKCXWkVel-PJ6rlP1E3bi93MgzvsiockjzaNyj7hHotWqycJ7UhNlkDMsOXl-nXSyLHgPt_xh2XagfLBDIetFAmJTYMTYHuGJ4BFAIKFbS-tQhaSfXYR0ia3koCsJS-2nMj_X-Vk0oaq8Y70NpfG3KAMJYh1szjSPxyYkOjvyITaaM0M3tS3eEOYiyI5qlJJocHeL6cw5LZ4wKanQpM3KRcqjG_RrRTOxYCoJ4IUCGoeSDITXimayh' },
-        { name: 'Kevin D.', photo: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCrgWQYGgO58m9FA9TBdfoLoFphgSpIAqKPxQX5GWQGKOOf8RwImBZ40l8-itGlcUIkAGBt2HVRcbC9JP24JB2vSnx9l7RfpX7_FZMRzt7uMTGWd263DrlIqrrrS-LV5F_HDaHuu-RkbJd2Do8PMIccCDnns3x94WzVhETJDysKXgy1T-XchraUw2D8sz1WCPX8_JoehzdcDWWx1uVGnTY4Gc5eQNeciaRMZH4-bk19eA1ckwQHKEDvheeTe7OkSDavzYqJYfyv1wKr' },
-      ],
-      mapImage: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCpoaLR14XoirbyHclyzgPeWFPXxUL2JKZhA7OmNe-yR5mWVE3aX9-h5omqd7Oe6DA8oQoOFfX1au-IFAtMn-Sd1CM42h60aqzNd4iLoHPYurwMf_L5I1FH24GaPB7b6VFEJJQSTInunASDqhQ3BYQicDiAavAkeK4JAQVdviIa2mQCMCO736z6stxFkxMmFiDUBSMjRP36aljwd6pIEX7GuWQTZZEMNfWhduM4rn6IQdjcNSkc9ZDNdkg9yvxRZwCfXZ5Nh2E6QH6i',
-      distance: '6.5 km',
-      duration: '15 mins',
-      routeDescription: 'via Canal Road',
-    },
-    {
-      id: 'r2',
-      driverName: 'Sarah K.',
-      driverStar: '5.0',
-      driverPhoto: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCrxGCkU2ZZ9Dg5vbgZEv04OT9PNE_nSzxo81PXFJmj1n2wUkdNHr-fgtWmiPsTr1X9O-Rgl_Q9gbhsecGBIbVZcR9qGscTGchW3Ro17N-Sp6-xHZGVBSv-HmcSo-fsFVmbX51aoDsENjMFHcj_kIFstWQnxGkXT80mh4OaJuCIxSbdyfPDle3Uep2PB_0pPmqSUTs0bNuAGjJlw54q1iwgNuxqWUetWQQ-b7J9LNUIPtTkc8l3bAAL76FKqhHjMNWMU2-jg0yU1r5L',
-      fare: 120,
-      departure: '09:15 AM',
-      seatsLeft: 1,
-      totalSeats: 3,
-      genderBreakdown: '🧑‍🤝‍🧑 0 M / 2 F',
-      carDetails: 'Silver Toyota Vitz',
-      vehicleType: 'ICE',
-      origin: 'North Nazimabad, Karachi',
-      destination: 'IBA Main Campus, Karachi',
-      bio: 'Med Student. Punctual, quiet ride, usually studying.',
-      university: 'IBA',
-      currentPool: [
-        { name: 'Aisha M.', photo: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDyr4JnvjuMJ0KvaaZKMBuH3pZKCXWkVel-PJ6rlP1E3bi93MgzvsiockjzaNyj7hHotWqycJ7UhNlkDMsOXl-nXSyLHgPt_xh2XagfLBDIetFAmJTYMTYHuGJ4BFAIKFbS-tQhaSfXYR0ia3koCsJS-2nMj_X-Vk0oaq8Y70NpfG3KAMJYh1szjSPxyYkOjvyITaaM0M3tS3eEOYiyI5qlJJocHeL6cw5LZ4wKanQpM3KRcqjG_RrRTOxYCoJ4IUCGoeSDITXimayh' },
-      ],
-      mapImage: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDMUP7cWtmqdloD8cisc8UspfmLrd7cdDb2-xk6gR18E3qz4LUlBEPgcLIqBGFN-TOdKD6AprLsLibAk6KGpS07yQCPi1U266zKxrQZv-4ehs43ribrYs_DeClqbowDHsD9C32B5m1vL8v4cLBc4f0yF4c5hbODAIivtcgbmQVPynvhVvnhkCfW9Jnxg0qo3TFCTSbuBrqlZ9WvzoNQDYSnUxEmJdpT5xyxAMBfi72AQ_X-93b6azS9_FB-HACiFUOdxH0Frw3aOuBZ',
-      distance: '12.8 km',
-      duration: '22 mins',
-      routeDescription: 'via University Road',
-    },
-    {
-      id: 'r3',
-      driverName: 'Marcus J.',
-      driverStar: '4.9',
-      driverPhoto: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCfdhM0rX-kwNJ0Fi9W5uNQ7KVDfT2hlhqFvMdQk3a6FsLUupzrkK_1Z088QBrg1dv9cN39tDOrYULQltmCEdwpfMCB02u0AvSVVVAlu11D6ZxWoaQ3AkahEmSFUifrJLDJevT1bCBb8L8b4JCTsQRM0zXqY32q08u6pivhiDSbzpuiWyKHgfja67equk_5WbIrnnKj-A438aRqThH6dAqCq-X92ghzLl657pe21ekP-a9QM-PSb_tZ0VQrzGIffbGv5yN4T7CinHlu',
-      fare: 300,
-      departure: '08:45 AM',
-      seatsLeft: 2,
-      totalSeats: 4,
-      genderBreakdown: '🧑‍🤝‍🧑 1 M / 1 F',
-      carDetails: 'Black Toyota Corolla',
-      vehicleType: 'ICE',
-      origin: 'Palo Alto Downtown',
-      destination: 'Stanford University Campus',
-      bio: 'Engineering Junior. Usually listening to lo-fi. Always on time for 9AMs.',
-      university: 'Stanford University',
-      currentPool: [
-        { name: 'Sarah L.', photo: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDyr4JnvjuMJ0KvaaZKMBuH3pZKCXWkVel-PJ6rlP1E3bi93MgzvsiockjzaNyj7hHotWqycJ7UhNlkDMsOXl-nXSyLHgPt_xh2XagfLBDIetFAmJTYMTYHuGJ4BFAIKFbS-tQhaSfXYR0ia3koCsJS-2nMj_X-Vk0oaq8Y70NpfG3KAMJYh1szjSPxyYkOjvyITaaM0M3tS3eEOYiyI5qlJJocHeL6cw5LZ4wKanQpM3KRcqjG_RrRTOxYCoJ4IUCGoeSDITXimayh' },
-        { name: 'Kevin D.', photo: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCrgWQYGgO58m9FA9TBdfoLoFphgSpIAqKPxQX5GWQGKOOf8RwImBZ40l8-itGlcUIkAGBt2HVRcbC9JP24JB2vSnx9l7RfpX7_FZMRzt7uMTGWd263DrlIqrrrS-LV5F_HDaHuu-RkbJd2Do8PMIccCDnns3x94WzVhETJDysKXgy1T-XchraUw2D8sz1WCPX8_JoehzdcDWWx1uVGnTY4Gc5eQNeciaRMZH4-bk19eA1ckwQHKEDvheeTe7OkSDavzYqJYfyv1wKr' },
-      ],
-      mapImage: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCbmf1g8rI6O5bgR5U5JbwRbqZbdRDFPEBMgKwfHQT4ea0q_GHVVqJeZD1CRKgcsPaViQovox4i1pT-kl7pH6E6f9mS9s4-kyJ0xaWnma0VOHZmi_W4fnn9usSAq6pc2mRoBe6Yntq9jn2kEHFwGD1CaPOjvaKB9QHmiPz_LJYHjDIqL9CBrzUPFo_SMGTFt3Oxycn1S2hrw0q3vn9cb-Ue61gQfA5r3LgQSPuv-8rFClNE-9bR5Zd-GG31pLgNrxDQu9BWEjOAAAdo',
-      distance: '4.2 miles',
-      duration: '12 mins',
-      routeDescription: 'via Palm Drive',
-    },
-    {
-      id: 'r4',
-      driverName: 'Zainab M.',
-      driverStar: '4.9',
-      driverPhoto: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDyr4JnvjuMJ0KvaaZKMBuH3pZKCXWkVel-PJ6rlP1E3bi93MgzvsiockjzaNyj7hHotWqycJ7UhNlkDMsOXl-nXSyLHgPt_xh2XagfLBDIetFAmJTYMTYHuGJ4BFAIKFbS-tQhaSfXYR0ia3koCsJS-2nMj_X-Vk0oaq8Y70NpfG3KAMJYh1szjSPxyYkOjvyITaaM0M3tS3eEOYiyI5qlJJocHeL6cw5LZ4wKanQpM3KRcqjG_RrRTOxYCoJ4IUCGoeSDITXimayh',
-      fare: 180,
-      departure: '08:00 AM',
-      seatsLeft: 3,
-      totalSeats: 4,
-      genderBreakdown: '🧑‍🤝‍🧑 0 M / 1 F',
-      carDetails: 'Red Honda City',
-      vehicleType: 'ICE',
-      origin: 'Clifton Block 5, Karachi',
-      destination: 'DHA Suffa University, Karachi',
-      bio: 'BBA Senior. Eco-friendly commuter. Always on time, loves a good chat.',
-      university: 'DHA Suffa University',
-      currentPool: [],
-      mapImage: getStaticMapUrl({ lat: '24.8164', lon: '67.0312' }, { lat: '24.8146', lon: '67.0800' }, [[67.0312, 24.8164], [67.0450, 24.8180], [67.0600, 24.8150], [67.0800, 24.8146]]),
-      distance: '9.1 km',
-      duration: '11 mins',
-      routeDescription: 'via Beach Avenue & Korangi Road',
-      originCoords: { lat: '24.8164', lon: '67.0312' },
-      destCoords: { lat: '24.8146', lon: '67.0800' },
-      routeCoordinates: [[67.0312, 24.8164], [67.0450, 24.8180], [67.0600, 24.8150], [67.0800, 24.8146]],
-    },
-    {
-      id: 'r5',
-      driverName: 'Bilal K.',
-      driverStar: '4.8',
-      driverPhoto: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCrgWQYGgO58m9FA9TBdfoLoFphgSpIAqKPxQX5GWQGKOOf8RwImBZ40l8-itGlcUIkAGBt2HVRcbC9JP24JB2vSnx9l7RfpX7_FZMRzt7uMTGWd263DrlIqrrrS-LV5F_HDaHuu-RkbJd2Do8PMIccCDnns3x94WzVhETJDysKXgy1T-XchraUw2D8sz1WCPX8_JoehzdcDWWx1uVGnTY4Gc5eQNeciaRMZH4-bk19eA1ckwQHKEDvheeTe7OkSDavzYqJYfyv1wKr',
-      fare: 220,
-      departure: '08:15 AM',
-      seatsLeft: 2,
-      totalSeats: 3,
-      genderBreakdown: '🧑‍🤝‍🧑 1 M / 0 F',
-      carDetails: 'White Nissan Leaf (EV)',
-      vehicleType: 'EV',
-      origin: 'Gulshan-e-Iqbal, Karachi',
-      destination: 'DHA Suffa University, Karachi',
-      bio: 'CS Sophomore. Eco-friendly EV commuter. Driving a Nissan Leaf EV!',
-      university: 'DHA Suffa University',
-      currentPool: [],
-      mapImage: getStaticMapUrl({ lat: '24.9140', lon: '67.0911' }, { lat: '24.8146', lon: '67.0800' }, [[67.0911, 24.9140], [67.0900, 24.8800], [67.0850, 24.8500], [67.0800, 24.8146]]),
-      distance: '15.4 km',
-      duration: '25 mins',
-      routeDescription: 'via Korangi Road / Expressway',
-      originCoords: { lat: '24.9140', lon: '67.0911' },
-      destCoords: { lat: '24.8146', lon: '67.0800' },
-      routeCoordinates: [[67.0911, 24.9140], [67.0900, 24.8800], [67.0850, 24.8500], [67.0800, 24.8146]],
-    },
-  ]);
+  const [rides, setRides] = useState([]);
 
   // 3. Driver Requests Negotiation Dashboard
   const [requests, setRequests] = useState([]);
@@ -260,6 +136,7 @@ export const AppProvider = ({ children }) => {
             universityCardImage: profile.university_card_url || '',
             verificationStatus: statusVal,
             savedVehicles: savedVehiclesMapped,
+            role: profile.role || 'student',
           };
         } else {
           // Fallback if public.profiles trigger hasn't run or table is empty
@@ -280,6 +157,7 @@ export const AppProvider = ({ children }) => {
             universityCardImage: '',
             verificationStatus: statusVal,
             savedVehicles: savedVehiclesMapped,
+            role: metadata.role || 'student',
           };
         }
         setCurrentUser(userObj);
@@ -886,6 +764,54 @@ export const AppProvider = ({ children }) => {
     }
   };
 
+  const fetchPendingStudents = async (universityName) => {
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('university', universityName)
+        .neq('role', 'admin')
+        .not('university_card_url', 'is', null)
+        .neq('university_card_url', '');
+
+      if (error) {
+        console.log('fetchPendingStudents DB Error:', error.message);
+        return [];
+      }
+      return data || [];
+    } catch (err) {
+      console.log('fetchPendingStudents exception:', err);
+      return [];
+    }
+  };
+
+  const verifyStudent = async (studentId, isApproved) => {
+    try {
+      let updateData = {};
+      if (isApproved) {
+        updateData = { is_verified: true };
+      } else {
+        updateData = { is_verified: false, university_card_url: '' };
+      }
+
+      const { error } = await supabase
+        .from('profiles')
+        .update(updateData)
+        .eq('id', studentId);
+
+      if (error) {
+        console.log('verifyStudent DB Error:', error.message);
+        Alert.alert('Database Error', `Failed to verify student: ${error.message}`);
+        return false;
+      }
+      return true;
+    } catch (err) {
+      console.log('verifyStudent exception:', err);
+      Alert.alert('System Error', `Failed to verify student: ${err.message}`);
+      return false;
+    }
+  };
+
   const sendVerificationEmail = async (email, code, subjectLine = 'UniRide Verification Code') => {
     console.log('\n======================================');
     console.log(`[VERIFICATION CODE] Email: ${email} | Code: ${code}`);
@@ -1002,6 +928,7 @@ export const AppProvider = ({ children }) => {
             universityCardImage: profile.university_card_url || '',
             verificationStatus: statusVal,
             savedVehicles: savedVehiclesMapped,
+            role: profile.role || 'student',
           };
         } else {
           console.log('SignIn profile fetch failed. Using local fallback.');
@@ -1021,6 +948,7 @@ export const AppProvider = ({ children }) => {
             universityCardImage: '',
             verificationStatus: statusVal,
             savedVehicles: savedVehiclesMapped,
+            role: metadata.role || 'student',
           };
         }
 
@@ -1082,6 +1010,12 @@ export const AppProvider = ({ children }) => {
 
   const signUp = async (userData, autoLogin = false) => {
     try {
+      // Check if email already registered
+      const exists = await checkEmailExists(userData.email);
+      if (exists) {
+        throw new Error("You are already registered! If you forgot your password, please go to the login page and click on 'Forgot Password' to reset it.");
+      }
+
       let genderVal = 'Other';
       if (userData.gender === 'Male') genderVal = 'Male';
       else if (userData.gender === 'Female') genderVal = 'Female';
@@ -1095,6 +1029,7 @@ export const AppProvider = ({ children }) => {
             university: userData.university,
             gender: genderVal,
             phone_number: userData.phone,
+            role: userData.role || 'student',
           }
         }
       });
@@ -2257,6 +2192,8 @@ export const AppProvider = ({ children }) => {
         cancelTrip,
         cancelRequest,
         startTripTracking,
+        fetchPendingStudents,
+        verifyStudent,
       }}
     >
       {children}
