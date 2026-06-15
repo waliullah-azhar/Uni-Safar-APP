@@ -58,7 +58,7 @@ Uni Safar/
 
 ### 1. Clone the repository and Install Dependencies
 ```bash
-git clone https://github.com/YOUR_USERNAME/Uni-Safar-App.git
+git clone https://github.com/waliullah-azhar/Uni-Safar-App.git
 cd Uni-Safar-App
 npm install
 ```
