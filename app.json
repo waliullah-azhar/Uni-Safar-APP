@@ -4,7 +4,7 @@
     "slug": "uni-safar",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon2.png",
+    "icon": "./assets/logo2.png",
     "splash": {
       "image": "./assets/splash-icon3.png",
       "resizeMode": "cover",
@@ -18,10 +18,8 @@
     "android": {
       "package": "com.unisafar.app",
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
-        "foregroundImage": "./assets/android-icon-foreground.png",
-        "backgroundImage": "./assets/android-icon-background.png",
-        "monochromeImage": "./assets/android-icon-monochrome.png"
+        "backgroundColor": "#004532",
+        "foregroundImage": "./assets/logo2.png"
       }
     },
     "web": {

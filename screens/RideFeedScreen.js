@@ -17,7 +17,7 @@ import { useAppContext } from '../context/AppContext';
 
 export const RideFeedScreen = ({ navigation }) => {
   const insets = useSafeAreaInsets();
-  const { rides, requestToJoin, currentUser, verifyProfileMock, cancelTrip, history, cancelRequest } = useAppContext();
+  const { rides, requestToJoin, currentUser, cancelTrip, history, cancelRequest } = useAppContext();
   const [searchQuery, setSearchQuery] = useState('');
   
   // Advanced Filter Modal States
@@ -234,9 +234,6 @@ export const RideFeedScreen = ({ navigation }) => {
                       <Text style={styles.bannerActionText}>Complete Setup</Text>
                       <Ionicons name="arrow-forward" size={12} color={COLORS.primary} style={{ marginLeft: 4 }} />
                     </TouchableOpacity>
-                    <TouchableOpacity onPress={() => { verifyProfileMock(); Alert.alert('Verified', 'Mock approved successfully!'); }} style={[styles.bannerActionBtn, { backgroundColor: '#fef3c7', borderColor: '#fde68a' }]}>
-                      <Text style={[styles.bannerActionText, { color: '#b45309' }]}>Debug: Instantly Verify</Text>
-                    </TouchableOpacity>
                   </View>
                 </View>
               </View>
@@ -254,9 +251,28 @@ export const RideFeedScreen = ({ navigation }) => {
                   <Text style={styles.bannerDesc}>
                     Your details are currently under review. Only verified students can join or post rides.
                   </Text>
-                  <TouchableOpacity onPress={() => { verifyProfileMock(); Alert.alert('Verified', 'Mock approved successfully!'); }} style={[styles.bannerActionBtn, { backgroundColor: '#dbeafe', borderColor: '#bfdbfe', marginTop: 8 }]}>
-                    <Text style={[styles.bannerActionText, { color: '#2563eb' }]}>Debug: Approve Profile</Text>
-                  </TouchableOpacity>
+                </View>
+              </View>
+            </View>
+          )}
+
+          {currentUser?.verificationStatus === 'rejected' && (
+            <View style={{ paddingHorizontal: SPACING.padding, marginBottom: SPACING.stackSm, marginTop: SPACING.stackMd }}>
+              <View style={[styles.bannerCard, styles.bannerCardError]}>
+                <View style={styles.bannerIconWrapper}>
+                  <Ionicons name="close-circle-outline" size={20} color={COLORS.error} />
+                </View>
+                <View style={styles.bannerTextContainer}>
+                  <Text style={[styles.bannerTitle, { color: COLORS.error }]}>Verification Rejected</Text>
+                  <Text style={styles.bannerDesc}>
+                    Reason: {currentUser.rejectReason || 'Invalid details provided.'}
+                  </Text>
+                  <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 8 }}>
+                    <TouchableOpacity onPress={() => navigation.navigate('Profile')} style={[styles.bannerActionBtn, { backgroundColor: '#fee2e2', borderColor: '#fca5a5' }]}>
+                      <Text style={[styles.bannerActionText, { color: '#dc2626' }]}>Re-upload Details</Text>
+                      <Ionicons name="arrow-forward" size={12} color="#dc2626" style={{ marginLeft: 4 }} />
+                    </TouchableOpacity>
+                  </View>
                 </View>
               </View>
             </View>
@@ -264,26 +280,42 @@ export const RideFeedScreen = ({ navigation }) => {
 
           <View style={styles.lockContainer}>
             <Ionicons 
-              name={currentUser?.verificationStatus === 'pending' ? "time-outline" : "lock-closed-outline"} 
+              name={
+                currentUser?.verificationStatus === 'pending' 
+                  ? "time-outline" 
+                  : currentUser?.verificationStatus === 'rejected' 
+                  ? "alert-circle-outline" 
+                  : "lock-closed-outline"
+              } 
               size={80} 
-              color={COLORS.primary} 
+              color={currentUser?.verificationStatus === 'rejected' ? COLORS.error : COLORS.primary} 
               style={{ marginBottom: 20 }}
             />
-            <Text style={styles.lockTitle}>
-              {currentUser?.verificationStatus === 'pending' ? "Verification Pending" : "Verification Required"}
+            <Text style={[styles.lockTitle, currentUser?.verificationStatus === 'rejected' && { color: COLORS.error }]}>
+              {currentUser?.verificationStatus === 'pending' 
+                ? "Verification Pending" 
+                : currentUser?.verificationStatus === 'rejected'
+                ? "Verification Rejected"
+                : "Verification Required"}
             </Text>
             <Text style={styles.lockSubtitle}>
               {currentUser?.verificationStatus === 'pending' 
                 ? `Your student card has been uploaded. A staff member from ${currentUser.university || 'your campus'} is verifying your details. You will be able to view and request rides once approved.`
+                : currentUser?.verificationStatus === 'rejected'
+                ? `Your student card verification request was rejected. Reason: ${currentUser.rejectReason || 'Invalid card details.'} Please update and re-submit your student card in the Profile tab.`
                 : `To ensure the safety of our peer network, only verified students and staff from ${currentUser.university || 'your campus'} can access active rides. Please upload your student ID card in the Profile tab.`}
             </Text>
             
             <TouchableOpacity 
-              style={styles.lockBtn}
+              style={[styles.lockBtn, currentUser?.verificationStatus === 'rejected' && { backgroundColor: COLORS.error }]}
               onPress={() => navigation.navigate('Profile')}
             >
               <Text style={styles.lockBtnText}>
-                {currentUser?.verificationStatus === 'pending' ? "Check Verification Status" : "Verify Profile Now"}
+                {currentUser?.verificationStatus === 'pending' 
+                  ? "Check Verification Status" 
+                  : currentUser?.verificationStatus === 'rejected'
+                  ? "Update Card Details"
+                  : "Verify Profile Now"}
               </Text>
               <Ionicons name="arrow-forward" size={16} color={COLORS.white} style={{ marginLeft: 6 }} />
             </TouchableOpacity>
@@ -1149,6 +1181,10 @@ const styles = StyleSheet.create({
   bannerCardWarning: {
     backgroundColor: 'rgba(217, 119, 6, 0.05)',
     borderColor: 'rgba(217, 119, 6, 0.2)',
+  },
+  bannerCardError: {
+    backgroundColor: 'rgba(186, 26, 26, 0.05)',
+    borderColor: 'rgba(186, 26, 26, 0.2)',
   },
   bannerCardPending: {
     backgroundColor: 'rgba(37, 99, 235, 0.05)',

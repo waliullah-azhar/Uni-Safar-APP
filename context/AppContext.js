@@ -4,6 +4,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getStaticMapUrl } from '../constants/MapConfig';
 import { supabase } from '../lib/supabaseClient';
 import * as Location from 'expo-location';
+import * as FileSystem from 'expo-file-system/legacy';
+import { decode } from 'base64-arraybuffer';
 
 // Paste your Brevo API key here to send real emails
 const BREVO_API_KEY = '';
@@ -90,7 +92,9 @@ export const AppProvider = ({ children }) => {
 
         let statusVal = 'unverified';
         if (profile) {
-          if (profile.is_verified) {
+          if (profile.verification_status) {
+            statusVal = profile.verification_status;
+          } else if (profile.is_verified) {
             statusVal = 'verified';
           } else if (profile.university_card_url && profile.university_card_url.trim() !== '') {
             statusVal = 'pending';
@@ -135,6 +139,7 @@ export const AppProvider = ({ children }) => {
             profileImage: profile.profile_picture_url || '',
             universityCardImage: profile.university_card_url || '',
             verificationStatus: statusVal,
+            rejectReason: profile.reject_reason || '',
             savedVehicles: savedVehiclesMapped,
             role: profile.role || 'student',
           };
@@ -482,11 +487,13 @@ export const AppProvider = ({ children }) => {
     fetchRides();
     fetchRequests();
     fetchHistory();
+    refreshUserProfile();
 
     const interval = setInterval(() => {
       fetchRides();
       fetchRequests();
       fetchHistory();
+      refreshUserProfile();
     }, 5000);
 
     return () => clearInterval(interval);
@@ -785,13 +792,21 @@ export const AppProvider = ({ children }) => {
     }
   };
 
-  const verifyStudent = async (studentId, isApproved) => {
+  const verifyStudent = async (studentId, isApproved, rejectReason = null) => {
     try {
       let updateData = {};
       if (isApproved) {
-        updateData = { is_verified: true };
+        updateData = { 
+          is_verified: true,
+          verification_status: 'verified',
+          reject_reason: null
+        };
       } else {
-        updateData = { is_verified: false, university_card_url: '' };
+        updateData = { 
+          is_verified: false,
+          verification_status: 'rejected',
+          reject_reason: rejectReason || 'Student card details were rejected by the admin.'
+        };
       }
 
       const { error } = await supabase
@@ -809,6 +824,74 @@ export const AppProvider = ({ children }) => {
       console.log('verifyStudent exception:', err);
       Alert.alert('System Error', `Failed to verify student: ${err.message}`);
       return false;
+    }
+  };
+
+  const refreshUserProfile = async () => {
+    if (!currentUser || !currentUser.id) return;
+    try {
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', currentUser.id)
+        .single();
+
+      if (profile) {
+        let statusVal = 'unverified';
+        if (profile.verification_status) {
+          statusVal = profile.verification_status;
+        } else if (profile.is_verified) {
+          statusVal = 'verified';
+        } else if (profile.university_card_url && profile.university_card_url.trim() !== '') {
+          statusVal = 'pending';
+        }
+
+        const mockVer = await AsyncStorage.getItem('@isMockVerified');
+        if (mockVer === 'true') {
+          statusVal = 'verified';
+        }
+
+        const { data: vehicles } = await supabase
+          .from('vehicles')
+          .select('*')
+          .eq('user_id', currentUser.id);
+
+        const savedVehiclesMapped = (vehicles || []).map(v => ({
+          id: v.id.toString(),
+          make: v.make,
+          model: v.model,
+          color: v.color,
+          plate: v.license_plate,
+          type: v.engine_type === 'Electric' ? 'EV' : 'ICE',
+          active: true
+        }));
+
+        setCurrentUser(prev => {
+          if (!prev) return null;
+          const updated = {
+            ...prev,
+            name: profile.full_name,
+            university: profile.university,
+            gender: profile.gender,
+            rating: parseFloat(profile.avg_rating || 5.00),
+            bio: profile.bio || '',
+            totalRides: parseInt(profile.total_rides_count || 0),
+            kmShared: parseFloat(profile.km_shared || 0.00).toFixed(1),
+            email: profile.student_email,
+            phone: profile.phone_number,
+            profileImage: profile.profile_picture_url || '',
+            universityCardImage: profile.university_card_url || '',
+            verificationStatus: statusVal,
+            rejectReason: profile.reject_reason || '',
+            savedVehicles: savedVehiclesMapped,
+            role: profile.role || 'student',
+          };
+          saveToStorage('@currentUser', updated);
+          return updated;
+        });
+      }
+    } catch (err) {
+      console.log('refreshUserProfile Exception:', err);
     }
   };
 
@@ -883,7 +966,9 @@ export const AppProvider = ({ children }) => {
 
         let statusVal = 'unverified';
         if (profile) {
-          if (profile.is_verified) {
+          if (profile.verification_status) {
+            statusVal = profile.verification_status;
+          } else if (profile.is_verified) {
             statusVal = 'verified';
           } else if (profile.university_card_url && profile.university_card_url.trim() !== '') {
             statusVal = 'pending';
@@ -927,6 +1012,7 @@ export const AppProvider = ({ children }) => {
             profileImage: profile.profile_picture_url || '',
             universityCardImage: profile.university_card_url || '',
             verificationStatus: statusVal,
+            rejectReason: profile.reject_reason || '',
             savedVehicles: savedVehiclesMapped,
             role: profile.role || 'student',
           };
@@ -1729,53 +1815,131 @@ export const AppProvider = ({ children }) => {
     });
   };
 
-  const setProfile = async (profileData) => {
-    if (!currentUser || !currentUser.id) return;
+  const uploadImageToSupabase = async (localUri, bucketName) => {
+    if (!localUri) return { url: null, error: 'No image provided' };
+    if (localUri.startsWith('http') || localUri.startsWith('data:')) {
+      return { url: localUri, error: null };
+    }
+
     try {
+      const base64 = await FileSystem.readAsStringAsync(localUri, {
+        encoding: 'base64',
+      });
+      const arrayBuffer = decode(base64);
+      
+      const fileExt = localUri.split('.').pop().toLowerCase() || 'jpeg';
+      const fileName = `${currentUser.id}_${Date.now()}.${fileExt}`;
+      
+      const { data, error } = await supabase.storage
+        .from(bucketName)
+        .upload(fileName, arrayBuffer, {
+          contentType: `image/${fileExt === 'jpg' ? 'jpeg' : fileExt}`,
+          upsert: true
+        });
+
+      if (error) {
+        console.log(`[STORAGE] Upload error to ${bucketName}:`, error.message);
+        return { url: null, error: error.message };
+      }
+
+      const { data: { publicUrl } } = supabase.storage
+        .from(bucketName)
+        .getPublicUrl(fileName);
+
+      console.log(`[STORAGE] Image uploaded successfully to ${bucketName}. Public URL:`, publicUrl);
+      return { url: publicUrl, error: null };
+    } catch (err) {
+      console.log(`[STORAGE] Exception uploading image to ${bucketName}:`, err);
+      return { url: null, error: err.message || err.toString() };
+    }
+  };
+
+  const setProfile = async (profileData) => {
+    if (!currentUser || !currentUser.id) return false;
+    try {
+      console.log('[PROFILE] Uploading profile and card images to storage...');
+      
+      const profileUpload = await uploadImageToSupabase(profileData.profileImage, 'profile-pictures');
+      if (profileUpload.error) {
+        Alert.alert(
+          'Profile Photo Upload Failed',
+          `Storage Error: ${profileUpload.error}`
+        );
+        return false;
+      }
+
+      const cardUpload = await uploadImageToSupabase(profileData.universityCardImage, 'verification-cards');
+      if (cardUpload.error) {
+        Alert.alert(
+          'Student Card Upload Failed',
+          `Storage Error: ${cardUpload.error}`
+        );
+        return false;
+      }
+
+      const publicProfileUrl = profileUpload.url;
+      const publicCardUrl = cardUpload.url;
+
+      if (!publicProfileUrl || !publicCardUrl) {
+        Alert.alert(
+          'Upload Failure',
+          'Failed to upload your images to secure storage. Please check your network and try again.'
+        );
+        return false;
+      }
+
       const { error } = await supabase
         .from('profiles')
         .update({
           full_name: profileData.name || currentUser.name,
           bio: profileData.bio || currentUser.bio,
-          profile_picture_url: profileData.profileImage,
-          university_card_url: profileData.universityCardImage,
-          is_verified: false
+          profile_picture_url: publicProfileUrl,
+          university_card_url: publicCardUrl,
+          is_verified: false,
+          verification_status: 'pending',
+          reject_reason: null
         })
         .eq('id', currentUser.id);
 
       if (error) {
         console.log('setProfile DB Error:', error.message);
+        Alert.alert('Database Error', `Failed to update profile: ${error.message}`);
+        return false;
       }
+
+      setCurrentUser(prev => {
+        const updated = {
+          ...prev,
+          name: profileData.name || prev.name,
+          bio: profileData.bio || prev.bio,
+          profileImage: publicProfileUrl,
+          universityCardImage: publicCardUrl,
+          universityCardExpiry: profileData.universityCardExpiry,
+          isProfileCompleted: true,
+          verificationStatus: 'pending',
+        };
+        saveToStorage('@currentUser', updated);
+        
+        console.log('SEND TO ADMIN PORTAL:', JSON.stringify({
+          action: 'VERIFY_PROFILE',
+          userId: prev.email,
+          fullName: updated.name,
+          university: updated.university,
+          profileImage: updated.profileImage,
+          universityCardImage: updated.universityCardImage,
+          universityCardExpiry: updated.universityCardExpiry,
+          submittedAt: new Date().toISOString()
+        }, null, 2));
+
+        return updated;
+      });
+
+      return true;
     } catch (err) {
       console.log('setProfile DB Exception:', err);
+      Alert.alert('System Error', `Failed to submit profile: ${err.message}`);
+      return false;
     }
-
-    setCurrentUser(prev => {
-      const updated = {
-        ...prev,
-        name: profileData.name || prev.name,
-        bio: profileData.bio || prev.bio,
-        profileImage: profileData.profileImage,
-        universityCardImage: profileData.universityCardImage,
-        universityCardExpiry: profileData.universityCardExpiry,
-        isProfileCompleted: true,
-        verificationStatus: 'pending',
-      };
-      saveToStorage('@currentUser', updated);
-      
-      console.log('SEND TO ADMIN PORTAL:', JSON.stringify({
-        action: 'VERIFY_PROFILE',
-        userId: prev.email,
-        fullName: updated.name,
-        university: updated.university,
-        profileImage: updated.profileImage,
-        universityCardImage: updated.universityCardImage,
-        universityCardExpiry: updated.universityCardExpiry,
-        submittedAt: new Date().toISOString()
-      }, null, 2));
-
-      return updated;
-    });
   };
 
   const verifyProfileMock = async () => {
@@ -2194,6 +2358,7 @@ export const AppProvider = ({ children }) => {
         startTripTracking,
         fetchPendingStudents,
         verifyStudent,
+        refreshUserProfile,
       }}
     >
       {children}

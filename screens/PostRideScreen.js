@@ -21,7 +21,7 @@ import { supabase } from '../lib/supabaseClient';
 import * as Location from 'expo-location';
 
 export const PostRideScreen = ({ navigation }) => {
-  const { currentUser, postRide, verifyProfileMock } = useAppContext();
+  const { currentUser, postRide } = useAppContext();
   const [currentStep, setCurrentStep] = useState(1);
 
   // Form States
@@ -386,9 +386,6 @@ export const PostRideScreen = ({ navigation }) => {
                   <Text style={styles.bannerActionText}>Complete Setup</Text>
                   <Ionicons name="arrow-forward" size={12} color={COLORS.primary} style={{ marginLeft: 4 }} />
                 </TouchableOpacity>
-                <TouchableOpacity onPress={() => { verifyProfileMock(); Alert.alert('Verified', 'Mock approved successfully!'); }} style={[styles.bannerActionBtn, { backgroundColor: '#fef3c7', borderColor: '#fde68a' }]}>
-                  <Text style={[styles.bannerActionText, { color: '#b45309' }]}>Debug: Instantly Verify</Text>
-                </TouchableOpacity>
               </View>
             </View>
           </View>
@@ -406,9 +403,28 @@ export const PostRideScreen = ({ navigation }) => {
               <Text style={styles.bannerDesc}>
                 Your details are currently under review. Only verified students can join or post rides.
               </Text>
-              <TouchableOpacity onPress={() => { verifyProfileMock(); Alert.alert('Verified', 'Mock approved successfully!'); }} style={[styles.bannerActionBtn, { backgroundColor: '#dbeafe', borderColor: '#bfdbfe', marginTop: 8 }]}>
-                <Text style={[styles.bannerActionText, { color: '#2563eb' }]}>Debug: Approve Profile</Text>
-              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      )}
+
+      {currentUser?.verificationStatus === 'rejected' && (
+        <View style={{ paddingHorizontal: SPACING.padding, marginBottom: SPACING.stackSm, marginTop: 8 }}>
+          <View style={[styles.bannerCard, styles.bannerCardError]}>
+            <View style={styles.bannerIconWrapper}>
+              <Ionicons name="close-circle-outline" size={20} color={COLORS.error} />
+            </View>
+            <View style={styles.bannerTextContainer}>
+              <Text style={[styles.bannerTitle, { color: COLORS.error }]}>Verification Rejected</Text>
+              <Text style={styles.bannerDesc}>
+                Reason: {currentUser.rejectReason || 'Invalid details provided.'}
+              </Text>
+              <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 8 }}>
+                <TouchableOpacity onPress={() => navigation.navigate('Profile')} style={[styles.bannerActionBtn, { backgroundColor: '#fee2e2', borderColor: '#fca5a5' }]}>
+                  <Text style={[styles.bannerActionText, { color: '#dc2626' }]}>Re-upload Details</Text>
+                  <Ionicons name="arrow-forward" size={12} color="#dc2626" style={{ marginLeft: 4 }} />
+                </TouchableOpacity>
+              </View>
             </View>
           </View>
         </View>
@@ -1521,6 +1537,10 @@ const styles = StyleSheet.create({
   bannerCardWarning: {
     backgroundColor: 'rgba(217, 119, 6, 0.05)',
     borderColor: 'rgba(217, 119, 6, 0.2)',
+  },
+  bannerCardError: {
+    backgroundColor: 'rgba(186, 26, 26, 0.05)',
+    borderColor: 'rgba(186, 26, 26, 0.2)',
   },
   bannerCardPending: {
     backgroundColor: 'rgba(37, 99, 235, 0.05)',

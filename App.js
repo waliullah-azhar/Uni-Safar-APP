@@ -67,44 +67,6 @@ function MainTabNavigator() {
   );
 }
 
-function AdminTabNavigator() {
-  const insets = useSafeAreaInsets();
-  const bottomPadding = insets.bottom > 0 ? insets.bottom + 6 : (Platform.OS === 'ios' ? 28 : 12);
-  const barHeight = 54 + bottomPadding;
-
-  return (
-    <Tab.Navigator
-      screenOptions={({ route }) => ({
-        tabBarIcon: ({ color, size, focused }) => {
-          let iconName;
-
-          if (route.name === 'Verify') {
-            iconName = focused ? 'checkbox' : 'checkbox-outline';
-          } else if (route.name === 'Profile') {
-            iconName = focused ? 'person' : 'person-outline';
-          }
-
-          return <Ionicons name={iconName} size={size} color={color} />;
-        },
-        tabBarActiveTintColor: COLORS.primary,
-        tabBarInactiveTintColor: COLORS.textSecondary,
-        tabBarStyle: {
-          borderTopWidth: 1,
-          borderTopColor: COLORS.outlineVariant,
-          backgroundColor: COLORS.surface,
-          paddingTop: 8,
-          paddingBottom: bottomPadding,
-          height: barHeight,
-        },
-        headerShown: false,
-      })}
-    >
-      <Tab.Screen name="Verify" component={AdminScreen} />
-      <Tab.Screen name="Profile" component={ProfileScreen} />
-    </Tab.Navigator>
-  );
-}
-
 function NavigationContent() {
   const { isAuthenticated, currentUser } = useAppContext();
 
@@ -114,7 +76,7 @@ function NavigationContent() {
         <Stack.Screen name="Auth" component={AuthScreen} />
       ) : currentUser?.role === 'admin' ? (
         <>
-          <Stack.Screen name="AdminTabs" component={AdminTabNavigator} />
+          <Stack.Screen name="AdminDashboard" component={AdminScreen} />
         </>
       ) : (
         <>

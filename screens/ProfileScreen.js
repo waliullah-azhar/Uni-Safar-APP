@@ -9,6 +9,7 @@ import {
   Modal,
   TextInput,
   Alert,
+  ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -27,7 +28,6 @@ export const ProfileScreen = ({ navigation }) => {
     removeVehicle, 
     reviews, 
     setProfile, 
-    verifyProfileMock, 
     respondToRiderCounter, 
     signOut, 
     cancelTrip, 
@@ -98,6 +98,7 @@ export const ProfileScreen = ({ navigation }) => {
   const [profileImage, setProfileImage] = useState(currentUser.profileImage || '');
   const [cardImage, setCardImage] = useState(currentUser.universityCardImage || '');
   const [cardExpiry, setCardExpiry] = useState(currentUser.universityCardExpiry || '');
+  const [profileUploading, setProfileUploading] = useState(false);
 
   // Add vehicle modal states
   const [vehicleModalVisible, setVehicleModalVisible] = useState(false);
@@ -160,7 +161,7 @@ export const ProfileScreen = ({ navigation }) => {
     );
   };
 
-  const handleSetProfile = () => {
+  const handleSetProfile = async () => {
     if (!profileImage.trim()) {
       Alert.alert('Required Field', 'Please take or choose a profile photo.');
       return;
@@ -195,17 +196,21 @@ export const ProfileScreen = ({ navigation }) => {
       return;
     }
 
+    setProfileUploading(true);
     // Call context to update profile
-    setProfile({
+    const success = await setProfile({
       name: fullName,
       bio,
       profileImage: profileImage.trim(),
       universityCardImage: cardImage.trim(),
       universityCardExpiry: cardExpiry.trim(),
     });
+    setProfileUploading(false);
 
-    setProfileModalVisible(false);
-    Alert.alert('Profile Submitted', 'Your profile details have been sent to the admin portal for verification.');
+    if (success) {
+      setProfileModalVisible(false);
+      Alert.alert('Profile Submitted', 'Your profile details have been sent to the admin portal for verification.');
+    }
   };
 
 
@@ -283,9 +288,6 @@ export const ProfileScreen = ({ navigation }) => {
                   <Text style={styles.bannerActionText}>Complete Setup</Text>
                   <Ionicons name="arrow-forward" size={12} color={COLORS.primary} style={{ marginLeft: 4 }} />
                 </TouchableOpacity>
-                <TouchableOpacity onPress={() => { verifyProfileMock(); Alert.alert('Verified', 'Mock approved successfully!'); }} style={[styles.bannerActionBtn, { backgroundColor: '#fef3c7', borderColor: '#fde68a' }]}>
-                  <Text style={[styles.bannerActionText, { color: '#b45309' }]}>Debug: Instantly Verify Profile</Text>
-                </TouchableOpacity>
               </View>
             </View>
           </View>
@@ -301,9 +303,26 @@ export const ProfileScreen = ({ navigation }) => {
               <Text style={styles.bannerDesc}>
                 Details sent to admin portal. Your profile is under review.
               </Text>
-              <TouchableOpacity onPress={() => { verifyProfileMock(); Alert.alert('Verified', 'Mock approved successfully!'); }} style={[styles.bannerActionBtn, { backgroundColor: '#dbeafe', borderColor: '#bfdbfe', marginTop: 8 }]}>
-                <Text style={[styles.bannerActionText, { color: '#2563eb' }]}>Debug: Approve Profile</Text>
-              </TouchableOpacity>
+            </View>
+          </View>
+        )}
+
+        {currentUser.verificationStatus === 'rejected' && (
+          <View style={[styles.bannerCard, styles.bannerCardError]}>
+            <View style={styles.bannerIconWrapper}>
+              <Ionicons name="close-circle-outline" size={20} color={COLORS.error} />
+            </View>
+            <View style={styles.bannerTextContainer}>
+              <Text style={[styles.bannerTitle, { color: COLORS.error }]}>Verification Rejected</Text>
+              <Text style={styles.bannerDesc}>
+                Reason: {currentUser.rejectReason || 'Invalid details provided.'}
+              </Text>
+              <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 8 }}>
+                <TouchableOpacity onPress={() => setProfileModalVisible(true)} style={[styles.bannerActionBtn, { backgroundColor: '#fee2e2', borderColor: '#fca5a5' }]}>
+                  <Text style={[styles.bannerActionText, { color: '#dc2626' }]}>Re-upload Details</Text>
+                  <Ionicons name="arrow-forward" size={12} color="#dc2626" style={{ marginLeft: 4 }} />
+                </TouchableOpacity>
+              </View>
             </View>
           </View>
         )}
@@ -798,17 +817,6 @@ export const ProfileScreen = ({ navigation }) => {
               <Ionicons name="trash-outline" size={14} color="#dc2626" style={{ marginRight: 4 }} />
               <Text style={[styles.bannerActionText, { color: '#dc2626' }]}>Clear All Active Rides</Text>
             </TouchableOpacity>
-
-            <TouchableOpacity
-              onPress={async () => {
-                await verifyProfileMock();
-                Alert.alert('Verified', 'Mock approved successfully!');
-              }}
-              style={[styles.bannerActionBtn, { backgroundColor: '#dbeafe', borderColor: '#bfdbfe', marginTop: 4 }]}
-            >
-              <Ionicons name="shield-checkmark-outline" size={14} color="#2563eb" style={{ marginRight: 4 }} />
-              <Text style={[styles.bannerActionText, { color: '#2563eb' }]}>Verify Profile</Text>
-            </TouchableOpacity>
           </View>
         </View>
       </ScrollView>
@@ -899,9 +907,16 @@ export const ProfileScreen = ({ navigation }) => {
             </ScrollView>
 
             <View style={styles.modalFooter}>
-              <TouchableOpacity onPress={handleSetProfile} style={styles.submitBtn}>
-                <Text style={styles.submitBtnText}>Submit to Admin Portal</Text>
-              </TouchableOpacity>
+              {profileUploading ? (
+                <View style={[styles.submitBtn, { backgroundColor: COLORS.outlineVariant, flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }]}>
+                  <ActivityIndicator size="small" color={COLORS.textSecondary} style={{ marginRight: 8 }} />
+                  <Text style={[styles.submitBtnText, { color: COLORS.textSecondary }]}>Uploading images...</Text>
+                </View>
+              ) : (
+                <TouchableOpacity onPress={handleSetProfile} style={styles.submitBtn}>
+                  <Text style={styles.submitBtnText}>Submit to Admin Portal</Text>
+                </TouchableOpacity>
+              )}
             </View>
           </View>
         </View>
@@ -1454,6 +1469,10 @@ const styles = StyleSheet.create({
   bannerCardWarning: {
     backgroundColor: 'rgba(217, 119, 6, 0.05)',
     borderColor: 'rgba(217, 119, 6, 0.2)',
+  },
+  bannerCardError: {
+    backgroundColor: 'rgba(186, 26, 26, 0.05)',
+    borderColor: 'rgba(186, 26, 26, 0.2)',
   },
   bannerCardPending: {
     backgroundColor: 'rgba(37, 99, 235, 0.05)',
