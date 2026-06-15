@@ -66,8 +66,8 @@ npm install
 ### 2. Configure Environment Configurations
 Create a `.env` file or update [supabaseClient.js](file:///D:/Car%20pooling%20system/Uni%20Safar/lib/supabaseClient.js) with your project coordinates:
 ```javascript
-const SUPABASE_URL = 'https://your-project-id.supabase.co';
-const SUPABASE_ANON_KEY = 'your-anon-public-key';
+const SUPABASE_URL = 'https://euofxswindukaxloenuk.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV1b2Z4c3dpbmR1a2F4bG9lbnVrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEzNzQ1MzYsImV4cCI6MjA5Njk1MDUzNn0.LRJQCSo4fjiSjl8YQSxwrLKErLdCe0ahT0JpCTpPiAg';
 ```
 
 ### 3. Initialize Database Tables
@@ -89,7 +89,7 @@ Scan the QR code displayed in the terminal with your phone using **Expo Go** (An
 
 ## 📢 Sharing the App with University Peers (Alternative Distribution)
 
-Since you don't have access to official Google Play Developer Console or Apple Developer Store accounts, you can distribute **Uni Safar** directly to your university community using these alternative methods:
+Since we don't have access to official Google Play Developer Console or Apple Developer Store accounts now so you can distribute **Uni Safar** directly to your university community using these alternative methods:
 
 ### 1. Android Users (Direct APK Sideloading) - *Recommended*
 You can compile a direct `.apk` installation package that students can download and install directly on their phones.
@@ -108,19 +108,16 @@ You can compile a direct `.apk` installation package that students can download 
     *   You can upload this `.apk` to **Google Drive**, **Dropbox**, or upload it to **GitHub Releases** on your repository.
     *   Students just need to download the file, tap it, and allow "Install from Unknown Sources" on their Android settings.
 
-### 2. iOS Users (Expo Go Link sharing)
-Because iOS restricts sideloading without a paid Apple Developer Account, the easiest way to share with iPhone users is through **Expo Go**.
+### 2. iOS Users (Local Sharing via Expo Go + Tunnel)
+Because iOS strictly restricts direct sideloading and requires a paid Apple Developer Account to compile native installation packages (.ipa), iPhone users can test the app directly using the Expo Go sandbox via a network tunnel.
 
-1.  **Configure Expo Updates**:
-    Make sure you have run `eas init` to initialize the project to your Expo account.
-2.  **Publish the Bundle**:
-    ```bash
-    npx expo export
-    ```
-    or publish it to your Expo Developer Dashboard.
-3.  **Share the QR Code**:
-    *   Expo will host a public URL for your project (e.g., `https://expo.dev/@your-username/uni-safar`).
-    *   iPhone users can download the free **Expo Go** app from the Apple App Store, scan your project’s QR code, and open **Uni Safar** instantly on their iPhones!
+Prerequisite: Ensure the iPhone and your development machine are connected to the internet.
+
+Start the Metro Bundler with Tunneling:
+Run the following command in your terminal to bypass local network/firewall restrictions:
+
+npx expo start --tunnel
+**Scan the QR Code**:
 
 ---
 
